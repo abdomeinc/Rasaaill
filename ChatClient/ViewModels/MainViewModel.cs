@@ -11,6 +11,15 @@ namespace ChatClient.ViewModels
         private readonly Services.Interfaces.IChatService _chatService;
         private readonly Services.Interfaces.IFileTransferService _fileTransfer;
 
+        [ObservableProperty]
+        private string currentMessage = string.Empty;
+
+        [ObservableProperty]
+        private Shared.Models.User? currentUser;
+
+        [ObservableProperty]
+        private Shared.Models.User? selectedRecipient;
+
         public ObservableCollection<Shared.Models.Message> Messages { get; } = new();
 
         public MainViewModel(Services.Interfaces.IChatService chatService, Services.Interfaces.IFileTransferService fileTransfer)
@@ -27,6 +36,9 @@ namespace ChatClient.ViewModels
         [RelayCommand]
         public async Task SendMessage()
         {
+            if (CurrentUser is null)
+                return;
+
             var message = new Shared.Models.Message
             {
                 Content = CurrentMessage,
@@ -41,6 +53,9 @@ namespace ChatClient.ViewModels
         [RelayCommand]
         public async Task SendFile()
         {
+            if (SelectedRecipient is null)
+                return;
+
             var dialog = new OpenFileDialog();
             if (dialog.ShowDialog() == true)
             {

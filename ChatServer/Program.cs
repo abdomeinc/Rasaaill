@@ -11,7 +11,8 @@ builder.Services.AddSignalR(hubOptions => {
 
 // Add Services
 builder.Services.AddSingleton<ChatServer.Services.Interfaces.IFirebaseService, ChatServer.Services.FirebaseService>();
-builder.Services.AddHostedService<ChatServer.Services.Interfaces.IDiscoveryService, ChatServer.Services.DiscoveryService>();
+//builder.Services.AddHostedService<ChatServer.Services.Interfaces.IDiscoveryService, ChatServer.Services.DiscoveryService>();
+builder.Services.AddHostedService<ChatServer.Services.DiscoveryService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

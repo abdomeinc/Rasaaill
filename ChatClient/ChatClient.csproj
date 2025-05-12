@@ -10,9 +10,11 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="Libplanet.Stun" Version="5.5.1" />
     <PackageReference Include="LiteDB" Version="5.0.21" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.4" />
     <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="StunClient" Version="1.2.0" />
   </ItemGroup>
 
   <ItemGroup>

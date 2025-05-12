@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ChatServer.Services
 {
-    public class DiscoveryService : Interfaces.IDiscoveryService
+    public class DiscoveryService //: Interfaces.IDiscoveryService
     {
         private readonly UdpClient _udpClient = new(12345);
         private Timer? _broadcastTimer;
