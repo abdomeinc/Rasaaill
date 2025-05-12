@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ChatServer.Services
 {
-    public class DiscoveryService //: Interfaces.IDiscoveryService
+    public class DiscoveryService : IHostedService, IDisposable //: Interfaces.IDiscoveryService
     {
         private readonly UdpClient _udpClient = new(12345);
         private Timer? _broadcastTimer;
@@ -13,6 +13,12 @@ namespace ChatServer.Services
         {
             _broadcastTimer = new Timer(BroadcastPresence, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
 
+            return Task.CompletedTask;
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            _broadcastTimer?.Change(Timeout.Infinite, 0);
             return Task.CompletedTask;
         }
 
@@ -43,5 +49,7 @@ namespace ChatServer.Services
         {
 
         }
+
+        public void Dispose() => _broadcastTimer?.Dispose();
     }
 }
