@@ -21,6 +21,11 @@ namespace ChatServer.Services
             await docRef.SetAsync(message);
         }
 
+        public async Task<FirebaseAdmin.Auth.FirebaseToken> VerifyToken(string idToken)
+        {
+            return await FirebaseAdmin.Auth.FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(idToken);
+        }
+
         //public async Task CreateGroupAsync(Shared.Models.ChatGroup group)
         //{
         //    await _db.Collection("groups").Document(group.Id).SetAsync(group);

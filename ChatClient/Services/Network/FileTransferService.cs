@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 
 namespace ChatClient.Services.Network
 {
-    public class FileTransferService: Interfaces.IFileTransferService
+    public class FileTransferService : Interfaces.IFileTransferService
     {
         private const int TransferPort = 52222;
         private readonly TcpListener _listener;
@@ -39,9 +39,9 @@ namespace ChatClient.Services.Network
         private async Task<string> ResolvePeerIp(string peerId)
         {
             // Implement STUN client resolution
-            using var stunClient = new StunClient("stun.l.google.com", 19302);
-            var response = await stunClient.QueryAsync();
-            return response.PublicEndPoint.Address.ToString();
+            var stunClient = new NatTraversalService();
+            var response = await stunClient.GetPublicEndPointAsync("stun.l.google.com", 19302);
+            return response/*.PublicEndPoint*/.Address.ToString();
         }
 
         public void StartListening()
@@ -60,6 +60,22 @@ namespace ChatClient.Services.Network
         private void ProcessIncomingFile(TcpClient client)
         {
             // Handle incoming file transfer
+        }
+    }
+
+    public class NatTraversalService
+    {
+        public async Task<IPEndPoint> GetPublicEndPointAsync(string stunServer = "stun.l.google.com", int port = 19302)
+        {
+            using var udpClient = new UdpClient();
+            var stunIp = Dns.GetHostAddresses(stunServer).FirstOrDefault();
+
+            // Simple STUN binding request
+            var request = new byte[] { 0x00, 0x01, 0x00, 0x00 };
+            await udpClient.SendAsync(request, request.Length, new IPEndPoint(stunIp, port));
+
+            var response = await udpClient.ReceiveAsync();
+            return response.RemoteEndPoint;
         }
     }
 }
