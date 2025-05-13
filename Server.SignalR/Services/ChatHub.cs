@@ -1,18 +1,22 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using StackExchange.Redis;
+using System.Text.Json;
 
 namespace Server.SignalR.Services
 {
     public class ChatHub : Hub<Interfaces.IClientChatCallbacks>, Interfaces.IChatHub
     {
-        private static readonly Dictionary<Guid, HashSet<Guid>> TypingStatus = new();
-        private static readonly Dictionary<Guid, List<Entities.Dtos.MessageDto>> UnreadMessages = new();
+        private readonly IDatabase _redis;
+
 
 
         private readonly Interfaces.IChatHubService _chatHubService;
 
-        public ChatHub(Interfaces.IChatHubService chatHubService)
+        public ChatHub(IConnectionMultiplexer redis, Interfaces.IChatHubService chatHubService)
         {
             _chatHubService = chatHubService;
+            _redis = redis.GetDatabase();
+
         }
 
         public async Task SendMessageAsync(Entities.Dtos.MessageDto message) =>
@@ -26,33 +30,26 @@ namespace Server.SignalR.Services
 
         public async Task NotifyTypingAsync(Guid conversationId) =>
             await _chatHubService.HandleTypingNotification(Context, conversationId);
-        public async Task<List<Entities.Dtos.MessageDto>> GetUnreadMessages(Guid userId)
+        public async Task<List<Entities.Dtos.MessageDto?>> GetUnreadMessages(Guid userId)
         {
-            if (UnreadMessages.ContainsKey(userId))
-            {
-                return UnreadMessages[userId];
-            }
-            return new List<Entities.Dtos.MessageDto>();
+            // Read all unread messages
+            var entries = await _redis.ListRangeAsync($"unread:{userId}");
+            var messages = entries
+                .Where(entry => !entry.IsNull) // Filter out null RedisValue entries
+                .Select(entry => JsonSerializer.Deserialize<Entities.Dtos.MessageDto>(entry.ToString())).ToList();
+
+            return messages ?? [];
         }
 
         public async Task AddUnreadMessage(Guid userId, Entities.Dtos.MessageDto message)
         {
-            if (!UnreadMessages.ContainsKey(userId))
-            {
-                UnreadMessages[userId] = new List<Entities.Dtos.MessageDto>();
-            }
-            UnreadMessages[userId].Add(message);
+            await _redis.ListRightPushAsync($"unread:{userId}", JsonSerializer.Serialize(message));
+
         }
 
         public async Task Typing(Guid conversationId, Guid userId)
         {
-            // Track typing status: conversationId -> userId
-            if (!TypingStatus.ContainsKey(conversationId))
-            {
-                TypingStatus[conversationId] = new HashSet<Guid>();
-            }
-
-            TypingStatus[conversationId].Add(userId);
+            await _redis.SetAddAsync($"typing:{conversationId}", userId.ToString());
 
             // Broadcast typing status to the conversation.
             await _chatHubService.HandleTypingNotification(Context, conversationId, userId, true);
@@ -60,25 +57,30 @@ namespace Server.SignalR.Services
 
         public async Task StopTyping(Guid conversationId, Guid userId)
         {
-            if (TypingStatus.ContainsKey(conversationId))
-            {
-                TypingStatus[conversationId].Remove(userId);
+            await _redis.SetRemoveAsync($"typing:{conversationId}", userId.ToString());
 
-                // Broadcast typing status to the conversation.
-                await _chatHubService.HandleTypingNotification(Context, conversationId, userId, false);
-            }
+            // Broadcast typing status to the conversation.
+            await _chatHubService.HandleTypingNotification(Context, conversationId, userId, false);
         }
 
         public async Task GetTypingStatusForAllUsers(Guid conversationId)
         {
-            // Send the current typing status for the conversation to the client.
-            if (TypingStatus.ContainsKey(conversationId))
+            // Get current typers
+            var userIdsRedisValue = await _redis.SetMembersAsync($"typing:{conversationId}");
+            if (userIdsRedisValue == null || userIdsRedisValue.Length == 0)
             {
-                var typingUsers = TypingStatus[conversationId].ToList();
-
-                // Broadcast typing status to the conversation.
-                await _chatHubService.HandleTypingNotification(Context, conversationId, typingUsers);
+                // No users are typing
+                await _chatHubService.HandleTypingNotification(Context, conversationId, new List<Guid>());
+                return;
             }
+
+            // Convert RedisValue[] to List<Guid> by converting to string and then parsing as Guid
+            var userIds = userIdsRedisValue
+                .Select(rv => Guid.Parse(rv.ToString())) // Convert to string and then parse as Guid
+                .ToList();
+
+            // Broadcast typing status to the conversation.
+            await _chatHubService.HandleTypingNotification(Context, conversationId, userIds);
         }
     }
 }
