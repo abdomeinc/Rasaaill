@@ -1,14 +1,14 @@
-﻿namespace Entities.Models
+﻿namespace Entities.Dtos
 {
-    public class ConversationParticipant
+    public class ConversationParticipantDto
     {
         public Guid ConversationId { get; set; }
 
-        public virtual Conversation Conversation { get; set; }
+        public virtual ConversationDto Conversation { get; set; }
 
         public Guid ParticipantId { get; set; }
 
-        public virtual User Participant { get; set; }
+        public virtual UserDto Participant { get; set; }
 
         public bool IsMuted { get; set; }
 
@@ -18,6 +18,6 @@
 
         public Guid? LastSeenMessageId { get; set; }
 
-        public virtual Message? LastSeenMessage { get; set; }
+        public virtual MessageDto? LastSeenMessage { get; set; }
     }
 }

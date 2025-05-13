@@ -1,6 +1,6 @@
-﻿namespace Entities.Models
+﻿namespace Entities.Dtos
 {
-    public class User
+    public class UserDto
     {
         public Guid Id { get; set; }
 
@@ -19,7 +19,5 @@
         public bool IsOnline { get; set; }
 
         public DateTime? LastSeen { get; set; }
-
-        public virtual List<Conversation> Conversations { get; set; } = [];
     }
 }

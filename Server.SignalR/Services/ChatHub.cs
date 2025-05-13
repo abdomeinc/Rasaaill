@@ -8,8 +8,6 @@ namespace Server.SignalR.Services
     {
         private readonly IDatabase _redis;
 
-
-
         private readonly Interfaces.IChatHubService _chatHubService;
 
         public ChatHub(IConnectionMultiplexer redis, Interfaces.IChatHubService chatHubService)
@@ -19,17 +17,26 @@ namespace Server.SignalR.Services
 
         }
 
-        public async Task SendMessageAsync(Entities.Dtos.MessageDto message) =>
+        public async Task SendMessageAsync(Entities.Dtos.MessageDto message)
+        {
             await _chatHubService.HandleSendMessage(Context, message);
+        }
 
-        public async Task JoinConversationAsync(Guid conversationId) =>
+        public async Task JoinConversationAsync(Guid conversationId)
+        {
             await _chatHubService.HandleJoinConversation(Context, conversationId);
+        }
 
-        public async Task MarkAsSeenAsync(Guid messageId) =>
+        public async Task MarkAsSeenAsync(Guid messageId)
+        {
             await _chatHubService.HandleMarkAsSeen(Context, messageId);
+        }
 
-        public async Task NotifyTypingAsync(Guid conversationId) =>
+        public async Task NotifyTypingAsync(Guid conversationId)
+        {
             await _chatHubService.HandleTypingNotification(Context, conversationId);
+        }
+
         public async Task<List<Entities.Dtos.MessageDto?>> GetUnreadMessages(Guid userId)
         {
             // Read all unread messages

@@ -126,6 +126,43 @@ namespace Server.SignalR.Services
         }
 
 
+        public async Task HandleTypingNotification(HubCallerContext context, Guid conversationId, Guid userId, bool state)
+        {
+            try
+            {
+                var recipientConnections = await GetConnectionsForConversationParticipantsAsync(conversationId, excludeUserId: userId);
+                foreach (var connectionId in recipientConnections)
+                {
+                    await _hubContext.Clients.Client(connectionId).UserTyping(conversationId, userId);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in HandleTypingNotification: {@Conversation Id}", conversationId);
+                // Optionally notify the sender
+            }
+        }
+        public async Task HandleTypingNotification(HubCallerContext context, Guid conversationId, List<Guid> userIds)
+        {
+            try
+            {
+                foreach (var userId in userIds)
+                {
+                    var recipientConnections = await GetConnectionsForConversationParticipantsAsync(conversationId, excludeUserId: userId);
+                    foreach (var connectionId in recipientConnections)
+                    {
+                        await _hubContext.Clients.Client(connectionId).UserTyping(conversationId, userId);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in HandleTypingNotification: {@Conversation Id}", conversationId);
+                // Optionally notify the sender
+            }
+        }
+
+
         private async Task<IEnumerable<string>> GetConnectionsForConversationParticipantsAsync(Guid conversationId, Guid excludeUserId)
         {
             try
