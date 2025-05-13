@@ -29,7 +29,7 @@ namespace Server.SignalR.Services
         {
             try
             {
-                var userId = _presenceService.GetUserIdByConnectionId(context.ConnectionId);
+                var userId = await _presenceService.GetUserIdByConnectionIdAsync(context.ConnectionId);
 
                 if (userId == Guid.Empty)
                     return;
@@ -41,7 +41,7 @@ namespace Server.SignalR.Services
                 var recipients = await _conversationService.GetParticipants(message.ConversationId);
                 foreach (var recipientId in recipients.Where(r => r != userId))
                 {
-                    var connectionIds = _presenceService.GetConnectionsForUser(recipientId);
+                    var connectionIds = await _presenceService.GetConnectionsForUserAsync(recipientId);
                     foreach (var connectionId in connectionIds)
                         await _hubContext.Clients.Client(connectionId).ReceiveMessage(persistedMessage);
 
@@ -58,7 +58,7 @@ namespace Server.SignalR.Services
         {
             try
             {
-                var userId = _presenceService.GetUserIdByConnectionId(context.ConnectionId);
+                var userId = await _presenceService.GetUserIdByConnectionIdAsync(context.ConnectionId);
 
                 if (userId == Guid.Empty)
                     return;
@@ -84,7 +84,7 @@ namespace Server.SignalR.Services
         {
             try
             {
-                var userId = _presenceService.GetUserIdByConnectionId(context.ConnectionId);
+                var userId = await _presenceService.GetUserIdByConnectionIdAsync(context.ConnectionId);
                 if (userId == Guid.Empty)
                     return;
 
@@ -92,7 +92,7 @@ namespace Server.SignalR.Services
                 if (seenInfo == null)
                     return;
 
-                var senderConnections = _presenceService.GetConnectionsForUser(seenInfo.SenderUserId);
+                var senderConnections = await _presenceService.GetConnectionsForUserAsync(seenInfo.SenderUserId);
                 foreach (var connId in senderConnections)
                 {
                     await _hubContext.Clients.Client(connId).MessageSeenNotification(seenInfo.ConversationId, messageId, userId);
@@ -108,7 +108,7 @@ namespace Server.SignalR.Services
         {
             try
             {
-                var userId = _presenceService.GetUserIdByConnectionId(context.ConnectionId);
+                var userId = await _presenceService.GetUserIdByConnectionIdAsync(context.ConnectionId);
                 if (userId == Guid.Empty)
                     return;
 
@@ -137,7 +137,7 @@ namespace Server.SignalR.Services
 
                 foreach (var userId in otherParticipantIds)
                 {
-                    var userConnections = _presenceService.GetConnectionsForUser(userId);
+                    var userConnections = await _presenceService.GetConnectionsForUserAsync(userId);
                     allConnections.AddRange(userConnections);
                 }
 
