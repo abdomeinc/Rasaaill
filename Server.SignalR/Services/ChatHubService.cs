@@ -6,16 +6,19 @@ namespace Server.SignalR.Services
     {
         private readonly IHubContext<ChatHub, Interfaces.IClientChatCallbacks> _hubContext;
 
+        private readonly ILogger<ChatHubService> _logger;
         private readonly Shared.Services.Interfaces.IUserPresenceService _presenceService;
         private readonly Shared.Services.Interfaces.IMessageService _messageService;
         private readonly Shared.Services.Interfaces.IConversationService _conversationService;
 
         public ChatHubService(
+            ILogger<ChatHubService> logger,
             IHubContext<ChatHub, Interfaces.IClientChatCallbacks> hubContext,
             Shared.Services.Interfaces.IUserPresenceService presenceService,
             Shared.Services.Interfaces.IMessageService messageService,
             Shared.Services.Interfaces.IConversationService conversationService)
         {
+            _logger = logger;
             _hubContext = hubContext;
             _presenceService = presenceService;
             _messageService = messageService;
@@ -24,81 +27,128 @@ namespace Server.SignalR.Services
 
         public async Task HandleSendMessage(HubCallerContext context, Entities.Dtos.MessageDto message)
         {
-            var userId = _presenceService.GetUserIdByConnectionId(context.ConnectionId);
-            var persistedMessage = await _messageService.SaveMessageAsync(message, userId);
-
-            var recipients = await _conversationService.GetParticipants(message.ConversationId);
-            foreach (var recipientId in recipients.Where(r => r != userId))
+            try
             {
-                var connectionIds = _presenceService.GetConnectionsForUser(recipientId);
-                foreach (var connectionId in connectionIds)
-                    await _hubContext.Clients.Client(connectionId).ReceiveMessage(persistedMessage);
+                var userId = _presenceService.GetUserIdByConnectionId(context.ConnectionId);
 
+                if (userId == Guid.Empty)
+                    return;
+
+                _logger.LogInformation("User {UserId} sent a message", userId);
+
+                var persistedMessage = await _messageService.SaveMessageAsync(message, userId);
+
+                var recipients = await _conversationService.GetParticipants(message.ConversationId);
+                foreach (var recipientId in recipients.Where(r => r != userId))
+                {
+                    var connectionIds = _presenceService.GetConnectionsForUser(recipientId);
+                    foreach (var connectionId in connectionIds)
+                        await _hubContext.Clients.Client(connectionId).ReceiveMessage(persistedMessage);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in HandleSendMessage: {@Message}", message);
+                // Optionally notify the sender
             }
         }
 
         public async Task HandleJoinConversation(HubCallerContext context, Guid conversationId)
         {
-            var userId = _presenceService.GetUserIdByConnectionId(context.ConnectionId);
-
-            if (userId == Guid.Empty)
-                return;
-
-            // Add this connection to a SignalR group named after the conversation ID
-            await _hubContext.Groups.AddToGroupAsync(context.ConnectionId, conversationId.ToString());
-
-            // Optional: Notify others that this user has joined
-            var connectionIds = await GetConnectionsForConversationParticipantsAsync(conversationId, excludeUserId: userId);
-            foreach (var connectionId in connectionIds)
+            try
             {
-                await _hubContext.Clients.Client(connectionId).UserJoinedConversation(userId, conversationId);
+                var userId = _presenceService.GetUserIdByConnectionId(context.ConnectionId);
+
+                if (userId == Guid.Empty)
+                    return;
+
+                // Add this connection to a SignalR group named after the conversation ID
+                await _hubContext.Groups.AddToGroupAsync(context.ConnectionId, conversationId.ToString());
+
+                // Optional: Notify others that this user has joined
+                var connectionIds = await GetConnectionsForConversationParticipantsAsync(conversationId, excludeUserId: userId);
+                foreach (var connectionId in connectionIds)
+                {
+                    await _hubContext.Clients.Client(connectionId).UserJoinedConversation(userId, conversationId);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in HandleJoinConversation: {@Conversation Id}", conversationId);
+                // Optionally notify the sender
             }
         }
 
         public async Task HandleMarkAsSeen(HubCallerContext context, Guid messageId)
         {
-            var userId = _presenceService.GetUserIdByConnectionId(context.ConnectionId);
-            if (userId == Guid.Empty)
-                return;
-
-            var seenInfo = await _messageService.MarkMessageAsSeenAsync(messageId, userId);
-            if (seenInfo == null)
-                return;
-
-            var senderConnections = _presenceService.GetConnectionsForUser(seenInfo.SenderUserId);
-            foreach (var connId in senderConnections)
+            try
             {
-                await _hubContext.Clients.Client(connId).MessageSeenNotification(seenInfo.ConversationId, messageId, userId);
+                var userId = _presenceService.GetUserIdByConnectionId(context.ConnectionId);
+                if (userId == Guid.Empty)
+                    return;
+
+                var seenInfo = await _messageService.MarkMessageAsSeenAsync(messageId, userId);
+                if (seenInfo == null)
+                    return;
+
+                var senderConnections = _presenceService.GetConnectionsForUser(seenInfo.SenderUserId);
+                foreach (var connId in senderConnections)
+                {
+                    await _hubContext.Clients.Client(connId).MessageSeenNotification(seenInfo.ConversationId, messageId, userId);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in HandleMarkAsSeen: {@Message Id}", messageId);
+                // Optionally notify the sender
             }
         }
         public async Task HandleTypingNotification(HubCallerContext context, Guid conversationId)
         {
-            var userId = _presenceService.GetUserIdByConnectionId(context.ConnectionId);
-            if (userId == Guid.Empty)
-                return;
-
-            var recipientConnections = await GetConnectionsForConversationParticipantsAsync(conversationId, excludeUserId: userId);
-            foreach (var connectionId in recipientConnections)
+            try
             {
-                await _hubContext.Clients.Client(connectionId).UserTyping(conversationId, userId);
+                var userId = _presenceService.GetUserIdByConnectionId(context.ConnectionId);
+                if (userId == Guid.Empty)
+                    return;
+
+                var recipientConnections = await GetConnectionsForConversationParticipantsAsync(conversationId, excludeUserId: userId);
+                foreach (var connectionId in recipientConnections)
+                {
+                    await _hubContext.Clients.Client(connectionId).UserTyping(conversationId, userId);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in HandleTypingNotification: {@Conversation Id}", conversationId);
+                // Optionally notify the sender
             }
         }
 
 
         private async Task<IEnumerable<string>> GetConnectionsForConversationParticipantsAsync(Guid conversationId, Guid excludeUserId)
         {
-            var participants = await _conversationService.GetParticipantUserIdsAsync(conversationId);
-            var otherParticipantIds = participants.Where(id => id != excludeUserId);
-
-            var allConnections = new List<string>();
-
-            foreach (var userId in otherParticipantIds)
+            try
             {
-                var userConnections = _presenceService.GetConnectionsForUser(userId);
-                allConnections.AddRange(userConnections);
-            }
+                var participants = await _conversationService.GetParticipantUserIdsAsync(conversationId);
+                var otherParticipantIds = participants.Where(id => id != excludeUserId);
 
-            return allConnections;
+                var allConnections = new List<string>();
+
+                foreach (var userId in otherParticipantIds)
+                {
+                    var userConnections = _presenceService.GetConnectionsForUser(userId);
+                    allConnections.AddRange(userConnections);
+                }
+
+                return allConnections;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in GetConnectionsForConversationParticipantsAsync: {@conversationId}", conversationId);
+                // Optionally notify the sender
+                return [];
+            }
         }
     }
 }

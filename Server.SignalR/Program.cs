@@ -1,4 +1,15 @@
+using Serilog;
+using StackExchange.Redis;
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
+    .Enrich.FromLogContext()
+    .CreateLogger();
+
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog();
 
 // Add services to the container.
 
@@ -6,7 +17,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSignalR(hubOptions => {
     hubOptions.EnableDetailedErrors = true;
     hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(1);
+})
+.AddStackExchangeRedis("localhost:6379", options =>
+{
+    options.Configuration.ChannelPrefix = RedisChannel.Literal("Rasaaill");
 });
+    ;
 
 builder.Services.AddHostedService<Shared.Services.DiscoveryService>();
 
