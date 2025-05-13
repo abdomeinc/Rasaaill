@@ -19,7 +19,5 @@
         public bool IsOnline { get; set; }
 
         public DateTime? LastSeen { get; set; }
-
-        public virtual List<Conversation> Conversations { get; set; } = [];
     }
 }

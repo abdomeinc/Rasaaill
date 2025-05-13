@@ -22,6 +22,8 @@
 
         public Guid? ForwardedFromMessageId { get; set; }
 
+        public bool IsMedia => Type is Shared.MessageType.Image or Shared.MessageType.Video or Shared.MessageType.Document;
+
         // For media (Image, Video or Document) message
         public string FileName { get; set; } = string.Empty;
 

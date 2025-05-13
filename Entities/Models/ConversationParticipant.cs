@@ -19,5 +19,7 @@
         public Guid? LastSeenMessageId { get; set; }
 
         public virtual Message? LastSeenMessage { get; set; }
+
+        public int NewMessagesCount { get; set; }
     }
 }

@@ -8,8 +8,6 @@
 
         public Shared.NotificationType NotificationType { get; set; }
 
-        public int NewMessagesCount { get; set; }
-
         public required Message LastMessage { get; set; }
 
         public DateTime CreationDate { get; set; }
