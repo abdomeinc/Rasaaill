@@ -54,6 +54,7 @@ namespace Client.Core.Comms.Services
             _connection.On<Entities.Dtos.MessageDto>("ReceiveMessage", _handler.OnMessageReceived);
             _connection.On<Guid>("Typing", _handler.OnTyping);
             _connection.On<Guid>("MessageSeen", _handler.OnMessageSeen);
+            _connection.On<List<Guid>>("UpdateTypingStatus", _handler.OnUpdateTypingStatus);
         }
 
         private async Task ReconnectWithDelay()
@@ -93,11 +94,8 @@ namespace Client.Core.Comms.Services
         {
             try
             {
-                // Check the current typing state for all users in active conversations.
-                // If necessary, clear out the typing state or notify users accordingly.
-
-                // This could be a signal to refresh typing status, for example:
-                _connection.InvokeAsync("GetTypingStatusForAllUsers"); // Assuming such a method exists on the server side.
+                // Fetch the typing status for the relevant conversation(s)
+                _connection.InvokeAsync("GetTypingStatusForAllUsers", Guid.Empty/*currentConversationId*/);                
 
                 _logger.LogInformation("Re-initialized typing indicators.");
             }
@@ -131,14 +129,11 @@ namespace Client.Core.Comms.Services
             }
         }
 
-        private Task<List<Entities.Dtos.MessageDto>> GetUnreadMessagesForUserAsync()
+        private async Task<List<Entities.Dtos.MessageDto>> GetUnreadMessagesForUserAsync()
         {
-            // Simulate fetching unread messages from a server, database, or cache.
-            return Task.FromResult(new List<Entities.Dtos.MessageDto>
-            {
-                new Entities.Dtos.MessageDto { Content = "Hello there!", SenderId = Guid.NewGuid(), Timestamp = DateTime.UtcNow },
-                new Entities.Dtos.MessageDto { Content = "How are you?", SenderId = Guid.NewGuid(), Timestamp = DateTime.UtcNow }
-            });
+            // Get the unread messages for the current user from the server
+            var unreadMessages = await _connection.InvokeAsync<List<Entities.Dtos.MessageDto>>("GetUnreadMessages", Guid.Empty/*currentUserId*/);
+            return unreadMessages;
         }
 
         public async Task ConnectAsync() => await _connection.StartAsync();

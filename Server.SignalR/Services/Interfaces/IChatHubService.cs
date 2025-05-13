@@ -8,5 +8,7 @@ namespace Server.SignalR.Services.Interfaces
         Task HandleJoinConversation(HubCallerContext context, Guid conversationId);
         Task HandleMarkAsSeen(HubCallerContext context, Guid messageId);
         Task HandleTypingNotification(HubCallerContext context, Guid conversationId);
+        Task HandleTypingNotification(HubCallerContext context, Guid conversationId, Guid userId, bool state);
+        Task HandleTypingNotification(HubCallerContext context, Guid conversationId, List<Guid> userIds);
     }
 }

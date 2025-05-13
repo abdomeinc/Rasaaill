@@ -5,5 +5,6 @@
         Task OnMessageReceived(Entities.Dtos.MessageDto message);
         Task OnTyping(Guid conversationId);
         Task OnMessageSeen(Guid messageId);
+        Task OnUpdateTypingStatus(List<Guid> typingUsers);
     }
 }
