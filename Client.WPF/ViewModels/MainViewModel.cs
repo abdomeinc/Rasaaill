@@ -1,54 +1,88 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
+﻿using Client.Core.Comms.Services.Interfaces;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net.Http.Headers;
 
 namespace Client.WPF.ViewModels
 {
-    public class MainViewModel
+    public enum CurrentUserInterfaceView
     {
-        private readonly HttpClient _httpClient;
-        private readonly Core.Comms.Services.Interfaces.ITokenStorageService _tokenStorage;
-        private readonly Core.Comms.Services.Interfaces.IAuthService _authService;
+        Conversations,
+        Settings,
+        Profile
+    }
 
-        public MainViewModel(HttpClient httpClient, Core.Comms.Services.Interfaces.ITokenStorageService tokenStorage, Core.Comms.Services.Interfaces.IAuthService authService)
+    public partial class MainViewModel : ViewModelBase
+    {
+        private readonly IServiceProvider _serviceProvider;
+
+
+        // Enum to define views
+
+        [ObservableProperty]
+        private CurrentUserInterfaceView currentView = CurrentUserInterfaceView.Conversations;
+
+        [ObservableProperty]
+        private ObservableObject currentViewModel;
+
+        public MainViewModel(IServiceProvider serviceProvider)
         {
-            _httpClient = httpClient;
-            _tokenStorage = tokenStorage;
-            _authService = authService;
+            _serviceProvider = serviceProvider;
+            currentViewModel = _serviceProvider.GetRequiredService<SplashViewModel>()!;
 
-            Initialize();
+            SwitchToLoginIfNeededAsync();
         }
 
-        private async void Initialize()
+        private async void SwitchToLoginIfNeededAsync()
         {
-            var token = await _tokenStorage.LoadTokenAsync();
+
+            var tokenService = _serviceProvider.GetRequiredService<ITokenStorageService>();
+            var authService = _serviceProvider.GetRequiredService<IAuthService>();
+            var httpClient = _serviceProvider.GetRequiredService<HttpClient>();
+
+            var token = await tokenService.LoadTokenAsync();
             if (!string.IsNullOrWhiteSpace(token))
             {
-                // Set Authorization header globally or on HttpClient
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-                var isValid = await _authService.ValidateTokenAsync(token); // optional, depends on server support
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                var isValid = await authService.ValidateTokenAsync(token);
                 if (isValid)
                 {
-                    NavigateToMainChat();
+                    SwitchToConversations();
                     return;
                 }
             }
-            NavigateToLogin();
+            SwitchToLogin();
         }
 
-        private void NavigateToLogin()
+        public void SwitchToSplash()
         {
-            throw new NotImplementedException();
+            CurrentViewModel = _serviceProvider.GetRequiredService<SplashViewModel>();
         }
 
-        private void NavigateToMainChat()
+
+        public void SwitchToLogin()
         {
-            throw new NotImplementedException();
+            CurrentViewModel = _serviceProvider.GetRequiredService<LoginViewModel>();
+        }
+
+        [RelayCommand]
+        public void SwitchToConversations()
+        {
+            CurrentViewModel = _serviceProvider.GetRequiredService<ConversationsViewModel>();
+        }
+
+        [RelayCommand]
+        public void SwitchToSettings()
+        {
+            CurrentViewModel = _serviceProvider.GetRequiredService<SettingsViewModel>();
+        }
+
+        [RelayCommand]
+        public void SwitchToProfile()
+        {
+            CurrentViewModel = _serviceProvider.GetRequiredService<ProfileViewModel>();
         }
     }
 }
