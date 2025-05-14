@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using StackExchange.Redis;
 using System.Text.Json;
 
 namespace Server.SignalR.Services
 {
+    [Authorize]
     public class ChatHub : Hub<Interfaces.IClientChatCallbacks>, Interfaces.IChatHub
     {
         private readonly IDatabase _redis;

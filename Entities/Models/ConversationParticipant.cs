@@ -1,7 +1,12 @@
-﻿namespace Entities.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Entities.Models
 {
     public class ConversationParticipant
     {
+        [Key]
+        public Guid Id { get; set; }
+
         public Guid ConversationId { get; set; }
 
         public virtual Conversation Conversation { get; set; }

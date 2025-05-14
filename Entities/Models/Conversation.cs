@@ -1,14 +1,18 @@
-﻿namespace Entities.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Entities.Models
 {
     public class Conversation
     {
+        [Key]
         public Guid Id { get; set; }
 
         public Shared.ConversationType ConversationType { get; set; }
 
         public Shared.NotificationType NotificationType { get; set; }
 
-        public required Message LastMessage { get; set; }
+        public Guid? LastMessageId { get; set; }
+        public Message? LastMessage { get; set; }
 
         public DateTime CreationDate { get; set; }
 
@@ -17,5 +21,7 @@
         public string? GroupName { get; set; } // for conversation type Group
 
         public string? GroupIconUrl { get; set; } // for conversation type Group
+
+        public virtual List<ConversationParticipant> Participants { get; set; } = [];
     }
 }

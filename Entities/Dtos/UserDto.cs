@@ -19,5 +19,11 @@
         public bool IsOnline { get; set; }
 
         public DateTime? LastSeen { get; set; }
+
+        public bool IsApproved { get; set; }
+
+        public virtual List<ConversationParticipantDto> Participants { get; set; } = [];
+        public virtual List<MessageDto> Messages { get; set; } = [];
+        public List<string> Roles { get; set; } = new();
     }
 }

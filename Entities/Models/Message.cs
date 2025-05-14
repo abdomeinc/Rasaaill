@@ -1,9 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entities.Models
 {
     public class Message
     {
+        [Key]
         public Guid Id { get; set; }
 
         public Shared.MessageState State { get; set; } //  Unknown (default fallback), Failed (for sending errors), Recalled (for undo message feature), Deleted (soft delete "for hiding from one side"), Sending (just created), local only, Sent (server accepted), Received (receiver got it), Seen (receiver opened it)
