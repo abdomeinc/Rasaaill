@@ -2,15 +2,45 @@
 
 namespace Server.SignalR.Services
 {
+    /// <summary>
+    /// Service for handling chat hub business logic, including sending messages, joining conversations,
+    /// marking messages as seen, and managing typing notifications.
+    /// </summary>
     public class ChatHubService : Interfaces.IChatHubService
     {
+        /// <summary>
+        /// SignalR hub context for sending messages to clients.
+        /// </summary>
         private readonly IHubContext<ChatHub, Interfaces.IClientChatCallbacks> _hubContext;
 
+        /// <summary>
+        /// Logger for logging information and errors.
+        /// </summary>
         private readonly ILogger<ChatHubService> _logger;
+
+        /// <summary>
+        /// Service for managing user presence and connections.
+        /// </summary>
         private readonly Shared.Services.Interfaces.IUserPresenceService _presenceService;
+
+        /// <summary>
+        /// Service for handling message persistence and state.
+        /// </summary>
         private readonly Shared.Services.Interfaces.IMessageService _messageService;
+
+        /// <summary>
+        /// Service for managing conversation participants and details.
+        /// </summary>
         private readonly Shared.Services.Interfaces.IConversationService _conversationService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChatHubService"/> class.
+        /// </summary>
+        /// <param name="logger">Logger instance.</param>
+        /// <param name="hubContext">SignalR hub context.</param>
+        /// <param name="presenceService">User presence service.</param>
+        /// <param name="messageService">Message service.</param>
+        /// <param name="conversationService">Conversation service.</param>
         public ChatHubService(
             ILogger<ChatHubService> logger,
             IHubContext<ChatHub, Interfaces.IClientChatCallbacks> hubContext,
@@ -25,6 +55,11 @@ namespace Server.SignalR.Services
             _conversationService = conversationService;
         }
 
+        /// <summary>
+        /// Handles sending a message from a user to all participants in a conversation.
+        /// </summary>
+        /// <param name="context">Hub caller context.</param>
+        /// <param name="message">Message DTO to send.</param>
         public async Task HandleSendMessage(HubCallerContext context, Entities.Dtos.MessageDto message)
         {
             try
@@ -54,6 +89,11 @@ namespace Server.SignalR.Services
             }
         }
 
+        /// <summary>
+        /// Handles a user joining a conversation, adds them to the SignalR group, and notifies other participants.
+        /// </summary>
+        /// <param name="context">Hub caller context.</param>
+        /// <param name="conversationId">Conversation identifier.</param>
         public async Task HandleJoinConversation(HubCallerContext context, Guid conversationId)
         {
             try
@@ -80,6 +120,11 @@ namespace Server.SignalR.Services
             }
         }
 
+        /// <summary>
+        /// Handles marking a message as seen by the current user and notifies the sender.
+        /// </summary>
+        /// <param name="context">Hub caller context.</param>
+        /// <param name="messageId">Message identifier.</param>
         public async Task HandleMarkAsSeen(HubCallerContext context, Guid messageId)
         {
             try
@@ -104,6 +149,12 @@ namespace Server.SignalR.Services
                 // Optionally notify the sender
             }
         }
+
+        /// <summary>
+        /// Handles notifying other participants that the current user is typing in a conversation.
+        /// </summary>
+        /// <param name="context">Hub caller context.</param>
+        /// <param name="conversationId">Conversation identifier.</param>
         public async Task HandleTypingNotification(HubCallerContext context, Guid conversationId)
         {
             try
@@ -125,7 +176,13 @@ namespace Server.SignalR.Services
             }
         }
 
-
+        /// <summary>
+        /// Handles notifying other participants that a specific user is typing or stopped typing in a conversation.
+        /// </summary>
+        /// <param name="context">Hub caller context.</param>
+        /// <param name="conversationId">Conversation identifier.</param>
+        /// <param name="userId">User identifier.</param>
+        /// <param name="state">Typing state (true if typing, false if stopped).</param>
         public async Task HandleTypingNotification(HubCallerContext context, Guid conversationId, Guid userId, bool state)
         {
             try
@@ -142,6 +199,13 @@ namespace Server.SignalR.Services
                 // Optionally notify the sender
             }
         }
+
+        /// <summary>
+        /// Handles notifying other participants that multiple users are typing in a conversation.
+        /// </summary>
+        /// <param name="context">Hub caller context.</param>
+        /// <param name="conversationId">Conversation identifier.</param>
+        /// <param name="userIds">List of user identifiers who are typing.</param>
         public async Task HandleTypingNotification(HubCallerContext context, Guid conversationId, List<Guid> userIds)
         {
             try
@@ -162,7 +226,12 @@ namespace Server.SignalR.Services
             }
         }
 
-
+        /// <summary>
+        /// Gets all connection IDs for participants in a conversation, excluding a specific user.
+        /// </summary>
+        /// <param name="conversationId">Conversation identifier.</param>
+        /// <param name="excludeUserId">User identifier to exclude from the result.</param>
+        /// <returns>Enumerable of connection IDs.</returns>
         private async Task<IEnumerable<string>> GetConnectionsForConversationParticipantsAsync(Guid conversationId, Guid excludeUserId)
         {
             try

@@ -2,6 +2,7 @@
 {
     public class JwtTokenDto
     {
-        public string Token { get; set; } = string.Empty;
+        public string AccessToken { get; set; } = string.Empty;
+        public RefreshTokenDto RefreshToken { get; set; } = default!;
     }
 }

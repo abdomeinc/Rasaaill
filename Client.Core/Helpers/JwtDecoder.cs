@@ -3,8 +3,19 @@ using System.Security.Claims;
 
 namespace Client.Core.Helpers
 {
+    /// <summary>
+    /// Provides helper methods for decoding and parsing JWT tokens.
+    /// </summary>
     public static class JwtDecoder
     {
+        /// <summary>
+        /// Parses a JWT token and extracts user information into a <see cref="Entities.Dtos.UserDto"/> object.
+        /// </summary>
+        /// <param name="jwt">The JWT token string to parse.</param>
+        /// <returns>
+        /// A <see cref="Entities.Dtos.UserDto"/> object containing user information extracted from the token claims,
+        /// or <c>null</c> if parsing fails.
+        /// </returns>
         public static Entities.Dtos.UserDto? ParseToken(string jwt)
         {
             var handler = new JwtSecurityTokenHandler();
@@ -22,6 +33,5 @@ namespace Client.Core.Helpers
                 Roles = claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList()
             };
         }
-
     }
 }

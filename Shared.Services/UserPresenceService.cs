@@ -3,18 +3,50 @@ using StackExchange.Redis;
 
 namespace Shared.Services
 {
+    /// <summary>
+    /// Service for tracking user presence using Redis.
+    /// Manages the mapping between users and their active SignalR connection IDs,
+    /// and updates user online status accordingly.
+    /// </summary>
     public class UserPresenceService : Interfaces.IUserPresenceService
     {
+        /// <summary>
+        /// The Redis database instance used for presence tracking.
+        /// </summary>
         private readonly IDatabase _redis;
 
+        /// <summary>
+        /// Logger for logging information and errors.
+        /// </summary>
         private readonly ILogger<UserPresenceService> _logger;
+
+        /// <summary>
+        /// Service for conversation-related operations.
+        /// </summary>
         private readonly Interfaces.IConversationService _conversationService;
+
+        /// <summary>
+        /// Service for user-related operations, such as updating online status.
+        /// </summary>
         private readonly Interfaces.IUserService _userService;
 
-        // Define a reasonable expiration time for presence keys (e.g., 5 minutes)
+        /// <summary>
+        /// Expiration time for presence keys in Redis (default: 5 minutes).
+        /// </summary>
         private static readonly TimeSpan PresenceKeyExpiration = TimeSpan.FromMinutes(5);
 
-        public UserPresenceService(ILogger<UserPresenceService> logger, Interfaces.IConversationService conversationService, IConnectionMultiplexer redis, Interfaces.IUserService userService)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserPresenceService"/> class.
+        /// </summary>
+        /// <param name="logger">Logger instance.</param>
+        /// <param name="conversationService">Conversation service instance.</param>
+        /// <param name="redis">Redis connection multiplexer.</param>
+        /// <param name="userService">User service instance.</param>
+        public UserPresenceService(
+            ILogger<UserPresenceService> logger,
+            Interfaces.IConversationService conversationService,
+            IConnectionMultiplexer redis,
+            Interfaces.IUserService userService)
         {
             _logger = logger;
             _conversationService = conversationService;
@@ -52,11 +84,7 @@ namespace Shared.Services
 
                 _logger.LogInformation("Added connection {ConnectionId} for user {UserId}", connectionId, userId);
 
-                // Optional: If this is the first connection, mark the user as online in persistent storage
-                // This check might need refinement depending on how you track initial online status
-                // A simpler approach might be to just call SetUserOnlineStatusAsync(userId, true) here,
-                // and rely on the RemoveConnectionAsync to set offline only when the last connection is gone.
-                // For simplicity, let's assume we always try to set online here. The user service should handle idempotency.
+                // Mark the user as online in persistent storage
                 await _userService.SetUserOnlineStatusAsync(userId, true);
             }
             catch (Exception ex)
@@ -104,11 +132,6 @@ namespace Shared.Services
                         _logger.LogInformation("User {UserId} has no remaining connections. Marking as offline.", userId);
                         // If no connections remain, mark the user as offline in persistent storage
                         await _userService.SetUserOnlineStatusAsync(userId, false);
-
-                        // Optional: Clean up the user's presence set key if it's empty
-                        // This prevents an empty set from lingering indefinitely
-                        // You could add another batch operation here: batch.KeyDeleteAsync(userKey);
-                        // Or rely on a separate cleanup process if needed.
                     }
                 }
                 else

@@ -25,7 +25,7 @@ namespace Client.WPF.ViewModels
 
         private async void Initialize()
         {
-            var token = _tokenStorage.Load();
+            var token = await _tokenStorage.LoadTokenAsync();
             if (!string.IsNullOrWhiteSpace(token))
             {
                 // Set Authorization header globally or on HttpClient
