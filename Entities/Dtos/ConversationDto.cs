@@ -8,7 +8,7 @@
 
         public Shared.NotificationType NotificationType { get; set; }
 
-        public required MessageDto LastMessage { get; set; }
+        public MessageDto LastMessage { get; set; } = default!;
 
         public DateTime CreationDate { get; set; }
 

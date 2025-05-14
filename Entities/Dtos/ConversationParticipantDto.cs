@@ -4,11 +4,11 @@
     {
         public Guid ConversationId { get; set; }
 
-        public virtual ConversationDto Conversation { get; set; }
+        public virtual ConversationDto Conversation { get; set; } = default!;
 
         public Guid ParticipantId { get; set; }
 
-        public virtual UserDto Participant { get; set; }
+        public virtual UserDto Participant { get; set; } = default!;
 
         public bool IsMuted { get; set; }
 
