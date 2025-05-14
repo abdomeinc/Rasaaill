@@ -10,11 +10,13 @@ namespace Client.WPF.ViewModels
 {
     public class MainViewModel
     {
+        private readonly HttpClient _httpClient;
         private readonly Core.Comms.Services.Interfaces.ITokenStorageService _tokenStorage;
         private readonly Core.Comms.Services.Interfaces.IAuthService _authService;
 
-        public MainViewModel(Core.Comms.Services.Interfaces.ITokenStorageService tokenStorage, Core.Comms.Services.Interfaces.IAuthService authService)
+        public MainViewModel(HttpClient httpClient, Core.Comms.Services.Interfaces.ITokenStorageService tokenStorage, Core.Comms.Services.Interfaces.IAuthService authService)
         {
+            _httpClient = httpClient;
             _tokenStorage = tokenStorage;
             _authService = authService;
 

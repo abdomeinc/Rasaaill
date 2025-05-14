@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+﻿using Entities.Dtos;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
 namespace Client.Core.Comms.Services
@@ -7,6 +8,12 @@ namespace Client.Core.Comms.Services
     {
         private readonly HttpClient _httpClient;
         private readonly Interfaces.ITokenStorageService _tokenStorage;
+
+        public bool IsAuthenticated => throw new NotImplementedException();
+
+        public UserDto? CurrentUser => throw new NotImplementedException();
+
+        public string? AccessToken => throw new NotImplementedException();
 
         public AuthService(HttpClient httpClient, Interfaces.ITokenStorageService tokenStorage)
         {
@@ -47,5 +54,19 @@ namespace Client.Core.Comms.Services
             _httpClient.DefaultRequestHeaders.Authorization = null;
         }
 
+        public Task<bool> LoginAsync(string email)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> TryAutoLoginAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> ValidateTokenAsync(string token)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

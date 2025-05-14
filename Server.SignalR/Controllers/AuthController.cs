@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -18,32 +19,48 @@ namespace Server.SignalR.Controllers
         private readonly SignInManager<Entities.Models.User> _signInManager;
         private readonly IConfiguration _configuration;
 
-        public AuthController(ILogger<AuthController> logger, UserManager<Entities.Models.User> userManager, SignInManager<Entities.Models.User> signInManager, IConfiguration configuration)
+        private readonly Entities.ApplicationDbContext _dbContext;
+        private readonly Shared.Services.Interfaces.IEmailSender _emailSender;
+        private readonly Shared.Services.Interfaces.IVerificationService _verificationService;
+        private readonly IMemoryCache _cache;
+
+        public AuthController(ILogger<AuthController> logger, UserManager<Entities.Models.User> userManager, SignInManager<Entities.Models.User> signInManager, IConfiguration configuration,
+            Entities.ApplicationDbContext dbContext,
+            Shared.Services.Interfaces.IEmailSender emailSender,
+            Shared.Services.Interfaces.IVerificationService verificationService,
+            IMemoryCache cache)
         {
             _logger = logger;
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
+
+            _dbContext = dbContext;
+            _emailSender = emailSender;
+            _verificationService = verificationService;
+            _cache = cache;
         }
 
         [HttpPost("request-code")]
         public async Task<IActionResult> RequestCode([FromBody] Entities.Dtos.RequestCodeDto dto)
         {
-            var user = await _userManager.FindByEmailAsync(dto.Email);
+            Entities.Models.User? user = await _userManager.FindByEmailAsync(dto.Email);
             if (user == null)
+            {
                 return BadRequest("Email not found.");
+            }
 
-            var code = new Random().Next(100000, 999999).ToString(); // 6-digit code
+            string code = new Random().Next(100000, 999999).ToString(); // 6-digit code
 
-            var verification = new Entities.Models.EmailVerification
+            Entities.Models.EmailVerification verification = new()
             {
                 Email = dto.Email,
                 Code = code,
                 Expiry = DateTime.UtcNow.AddMinutes(10)
             };
 
-            _context.EmailVerifications.Add(verification);
-            await _context.SaveChangesAsync();
+            _ = _dbContext.EmailVerifications.Add(verification);
+            _ = await _dbContext.SaveChangesAsync();
 
             await _emailSender.SendEmailAsync(dto.Email, "Your Login Code", $"Your code is: {code}");
 
@@ -53,40 +70,46 @@ namespace Server.SignalR.Controllers
         [HttpPost("verify-code")]
         public async Task<IActionResult> VerifyCode([FromBody] Entities.Dtos.VerifyCodeDto dto)
         {
-            var verification = await _context.EmailVerifications
+            Entities.Models.EmailVerification? verification = await _dbContext.EmailVerifications
                 .FirstOrDefaultAsync(v => v.Email == dto.Email && v.Code == dto.Code && v.Expiry > DateTime.UtcNow);
 
             if (verification == null)
+            {
                 return Unauthorized("Invalid or expired code.");
+            }
 
-            var user = await _userManager.FindByEmailAsync(dto.Email);
+            Entities.Models.User? user = await _userManager.FindByEmailAsync(dto.Email);
             if (user == null)
+            {
                 return Unauthorized("User not found.");
+            }
 
-            var (token, refreshToken) = await GenerateJwtToken(user);
+            (string token, Entities.Dtos.RefreshTokenDto refreshToken) = await GenerateJwtToken(user);
             return Ok(new Entities.Dtos.JwtTokenDto { Token = token });
         }
 
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh([FromBody] Entities.Dtos.TokenRefreshRequestDto model)
         {
-            var principal = GetPrincipalFromExpiredToken(model.AccessToken);
-            var userId = Guid.Parse(principal.FindFirstValue(ClaimTypes.NameIdentifier) ?? "");
-            var jti = principal.FindFirstValue(JwtRegisteredClaimNames.Jti);
+            ClaimsPrincipal principal = GetPrincipalFromExpiredToken(model.AccessToken);
+            Guid userId = Guid.Parse(principal.FindFirstValue(ClaimTypes.NameIdentifier) ?? "");
+            string? jti = principal.FindFirstValue(JwtRegisteredClaimNames.Jti);
 
-            var token = await _dbContext.RefreshTokens.FirstOrDefaultAsync(t =>
+            Entities.Models.RefreshToken? token = await _dbContext.RefreshTokens.FirstOrDefaultAsync(t =>
                 t.Token == model.RefreshToken && t.JwtId == jti && !t.IsRevoked && t.Expires > DateTime.UtcNow);
 
             if (token == null)
+            {
                 return Unauthorized("Invalid or expired refresh token.");
+            }
 
-            var user = await _userManager.FindByIdAsync(userId.ToString());
-            var (newAccessToken, newRefreshToken) = await GenerateJwtToken(user!);
+            Entities.Models.User? user = await _userManager.FindByIdAsync(userId.ToString());
+            (string newAccessToken, Entities.Dtos.RefreshTokenDto newRefreshToken) = await GenerateJwtToken(user!);
 
             // Revoke old token
             token.IsRevoked = true;
-            _dbContext.RefreshTokens.Update(token);
-            await _dbContext.SaveChangesAsync();
+            _ = _dbContext.RefreshTokens.Update(token);
+            _ = await _dbContext.SaveChangesAsync();
 
             return Ok(new { Token = newAccessToken, RefreshToken = newRefreshToken.Token });
         }
@@ -97,35 +120,39 @@ namespace Server.SignalR.Controllers
             return Ok("Verification code sent.");
         }
 
-        [HttpPost("verify")]
+        [HttpPost("verify-login-code2")]
         public async Task<IActionResult> VerifyCode([FromBody] Entities.Dtos.EmailCodeDto dto)
         {
-            var (success, error, user) = await _verificationService.VerifyCodeAsync(dto.Email, dto.Code);
+            (bool success, string? error, Entities.Models.User? user) = await _verificationService.VerifyCodeAsync(dto.Email, dto.Code);
             if (!success || user == null)
+            {
                 return BadRequest(error);
+            }
 
-            var (token, refreshToken) = await _tokenService.GenerateTokens(user); // your existing logic
+            (string token, Entities.Dtos.RefreshTokenDto refreshToken) = await GenerateJwtToken(user); // your existing logic
 
             return Ok(new
             {
                 Token = token,
                 RefreshToken = refreshToken.Token,
-                Expires = refreshToken.Expires
+                refreshToken.Expires
             });
         }
 
-        [HttpPost("request-code")]
+        [HttpPost("request-login-code")]
         public async Task<IActionResult> RequestLoginCode([FromBody] Entities.Dtos.EmailDto model)
         {
-            var user = await _userManager.FindByEmailAsync(model.Email);
+            Entities.Models.User? user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null || !user.IsApproved)
+            {
                 return Unauthorized("User not found or not approved.");
+            }
 
             // Generate 6-digit code
-            var code = RandomNumberGenerator.GetInt32(100000, 999999).ToString();
+            string code = RandomNumberGenerator.GetInt32(100000, 999999).ToString();
 
             // Store code in memory cache with expiration (e.g. 10 mins)
-            _cache.Set($"login_code_{model.Email.ToLower()}", code, TimeSpan.FromMinutes(10));
+            _ = _cache.Set($"login_code_{model.Email.ToLower()}", code, TimeSpan.FromMinutes(10));
 
             // Send email
             await _emailSender.SendEmailAsync(user.Email!, "Your verification code", $"Your login code is: {code}");
@@ -133,21 +160,25 @@ namespace Server.SignalR.Controllers
             return Ok("Verification code sent.");
         }
 
-        [HttpPost("verify-code")]
+        [HttpPost("verify-login-code")]
         public async Task<IActionResult> VerifyLoginCode([FromBody] Entities.Dtos.VerifyCodeDto model)
         {
-            var user = await _userManager.FindByEmailAsync(model.Email);
+            Entities.Models.User? user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null || !user.IsApproved)
+            {
                 return Unauthorized("Invalid user or not approved.");
+            }
 
-            var cachedCode = _cache.Get<string>($"login_code_{model.Email.ToLower()}");
+            string? cachedCode = _cache.Get<string>($"login_code_{model.Email.ToLower()}");
             if (cachedCode == null || cachedCode != model.Code)
+            {
                 return Unauthorized("Invalid or expired verification code.");
+            }
 
             // Remove used code
             _cache.Remove($"login_code_{model.Email.ToLower()}");
 
-            var token = await GenerateJwtToken(user);
+            (string accessToken, Entities.Dtos.RefreshTokenDto refreshToken) token = await GenerateJwtToken(user);
             return Ok(new { Token = token });
         }
 
@@ -194,12 +225,12 @@ namespace Server.SignalR.Controllers
 
         private async Task<(string accessToken, Entities.Dtos.RefreshTokenDto refreshToken)> GenerateJwtToken(Entities.Models.User user) // Made async because fetching roles/claims might be async
         {
-            var jwtId = Guid.NewGuid().ToString();
+            string jwtId = Guid.NewGuid().ToString();
 
             // --- JWT creation (same as before, with "jti" claim) ---
 
             // Initialize a list of claims
-            var claims = new List<Claim>
+            List<Claim> claims = new()
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.DisplayName),
@@ -215,20 +246,20 @@ namespace Server.SignalR.Controllers
             // This often involves your Identity/User management system (e.g., UserManager in ASP.NET Core Identity)
             // The exact implementation depends on how you manage roles and the structure of your User object.
             // Assuming you have a way to get roles, for example:
-            var userRoles = await _userManager.GetRolesAsync(user); // Example using UserManager
+            IList<string> userRoles = await _userManager.GetRolesAsync(user); // Example using UserManager
 
-            foreach (var role in userRoles)
+            foreach (string role in userRoles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
             // Example: Fetching and adding other custom claims stored in your database
-            var userDbClaims = await _userManager.GetClaimsAsync(user); // Example using UserManager
+            IList<Claim> userDbClaims = await _userManager.GetClaimsAsync(user); // Example using UserManager
             claims.AddRange(userDbClaims);
 
 
             // --- Rest of your token generation code ---
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"] ?? ""));
+            SymmetricSecurityKey key = new(Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"] ?? ""));
 
             // IMPORTANT: Check key size BEFORE creating SigningCredentials
             if (key.KeySize < 128) // HS256 requires minimum 128 bits (16 bytes)
@@ -243,18 +274,18 @@ namespace Server.SignalR.Controllers
             }
 
 
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            SigningCredentials creds = new(key, SecurityAlgorithms.HmacSha256);
 
-            var token = new JwtSecurityToken(
+            JwtSecurityToken token = new(
                 _configuration["Jwt:Issuer"],
                 _configuration["Jwt:Audience"],
                 claims, // Use the enhanced claims list
                 expires: DateTime.Now.AddDays(1), // Adjust expiration as needed
                 signingCredentials: creds);
 
-            var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
+            string accessToken = new JwtSecurityTokenHandler().WriteToken(token);
 
-            var refreshToken = new Entities.Dtos.RefreshTokenDto
+            Entities.Models.RefreshToken refreshToken = new()
             {
                 Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
                 Expires = DateTime.UtcNow.AddDays(7),
@@ -263,17 +294,17 @@ namespace Server.SignalR.Controllers
             };
 
             // Store refresh token in DB
-            _dbContext.RefreshTokens.Add(refreshToken);
-            await _dbContext.SaveChangesAsync();
+            _ = _dbContext.RefreshTokens.Add(refreshToken);
+            _ = await _dbContext.SaveChangesAsync();
 
-            return (accessToken, refreshToken);
+            return (accessToken, new Entities.Dtos.RefreshTokenDto() { Token = refreshToken.Token, Expires = refreshToken.Expires, JwtId = refreshToken.JwtId, UserId = refreshToken.UserId });
         }
 
         private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
         {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"]!));
+            SymmetricSecurityKey key = new(Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"]!));
 
-            var tokenValidationParameters = new TokenValidationParameters
+            TokenValidationParameters tokenValidationParameters = new()
             {
                 ValidateIssuer = true,
                 ValidateAudience = true,
@@ -284,13 +315,12 @@ namespace Server.SignalR.Controllers
                 IssuerSigningKey = key
             };
 
-            var handler = new JwtSecurityTokenHandler();
-            var principal = handler.ValidateToken(token, tokenValidationParameters, out var validatedToken);
+            JwtSecurityTokenHandler handler = new();
+            ClaimsPrincipal principal = handler.ValidateToken(token, tokenValidationParameters, out SecurityToken? validatedToken);
 
-            if (validatedToken is not JwtSecurityToken jwt || !jwt.Header.Alg.Equals(SecurityAlgorithms.HmacSha256))
-                throw new SecurityTokenException("Invalid token");
-
-            return principal;
+            return validatedToken is not JwtSecurityToken jwt || !jwt.Header.Alg.Equals(SecurityAlgorithms.HmacSha256)
+                ? throw new SecurityTokenException("Invalid token")
+                : principal;
         }
     }
 }

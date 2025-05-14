@@ -54,5 +54,30 @@ namespace Client.Core.Comms.Services
                 File.Delete(TokenFilePath);
             }
         }
+
+        public Task SaveTokenAsync(string accessToken, string refreshToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SaveTokenAsync(string accessToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<(string AccessToken, string RefreshToken)> LoadTokenAndRefreshAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> LoadTokenAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteTokenAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

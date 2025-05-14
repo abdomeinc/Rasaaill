@@ -9,6 +9,8 @@ namespace Client.WPF
     /// </summary>
     public partial class App : Application
     {
+        //services.AddHttpClient<IAuthService, AuthService>();
+
     }
 
 }
