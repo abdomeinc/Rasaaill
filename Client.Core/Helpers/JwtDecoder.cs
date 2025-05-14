@@ -33,5 +33,23 @@ namespace Client.Core.Helpers
                 Roles = claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList()
             };
         }
+
+        public static DateTime? GetExpiration(string jwt)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(jwt);
+
+            var expClaim = token.Claims.FirstOrDefault(c => c.Type == "exp")?.Value;
+            if (expClaim == null) return null;
+
+            if (long.TryParse(expClaim, out long secondsSinceEpoch))
+            {
+                // 'exp' is in UNIX timestamp format
+                var expiration = DateTimeOffset.FromUnixTimeSeconds(secondsSinceEpoch).UtcDateTime;
+                return expiration;
+            }
+
+            return null;
+        }
     }
 }

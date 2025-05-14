@@ -27,7 +27,7 @@
         /// <returns>
         /// A task that represents the asynchronous operation. The task result contains the access token.
         /// </returns>
-        Task<string> LoadTokenAsync();
+        Task<string?> LoadTokenAsync();
 
         /// <summary>
         /// Asynchronously deletes the stored tokens.

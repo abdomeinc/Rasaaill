@@ -1,5 +1,7 @@
-﻿using System.Security.Cryptography;
+﻿using Client.Core.Helpers;
+using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 
 namespace Client.Core.Comms.Services
 {
@@ -13,6 +15,7 @@ namespace Client.Core.Comms.Services
 
         private static readonly string AccessTokenFile = Path.Combine(TokenDirectory, "access.token");
         private static readonly string RefreshTokenFile = Path.Combine(TokenDirectory, "refresh.token");
+        private static readonly string MetaFilePath = Path.Combine(TokenDirectory, "jwt.meta.json");
 
         /// <summary>
         /// Encrypts and saves the access and refresh tokens to disk.
@@ -21,22 +24,22 @@ namespace Client.Core.Comms.Services
         /// <param name="refreshToken">The refresh token to store.</param>
         public async Task SaveTokenAsync(string accessToken, string refreshToken)
         {
-            Directory.CreateDirectory(TokenDirectory);
 
-            var encryptedAccess = ProtectedData.Protect(
-                Encoding.UTF8.GetBytes(accessToken),
-                null,
-                DataProtectionScope.CurrentUser
-            );
+            Directory.CreateDirectory(Path.GetDirectoryName(AccessTokenFile)!);
 
-            var encryptedRefresh = ProtectedData.Protect(
-                Encoding.UTF8.GetBytes(refreshToken),
-                null,
-                DataProtectionScope.CurrentUser
-            );
+            var encrypted = ProtectedData.Protect(Encoding.UTF8.GetBytes(accessToken), null, DataProtectionScope.CurrentUser);
+            await File.WriteAllBytesAsync(AccessTokenFile, encrypted);
 
-            await File.WriteAllBytesAsync(AccessTokenFile, encryptedAccess);
-            await File.WriteAllBytesAsync(RefreshTokenFile, encryptedRefresh);
+            var meta = new
+            {
+                RefreshToken = refreshToken,
+                SavedAt = DateTime.UtcNow,
+                ExpiresAt = JwtDecoder.GetExpiration(accessToken)?.ToUniversalTime()
+            };
+
+            var metaJson = JsonSerializer.Serialize(meta);
+            var encryptedMeta = ProtectedData.Protect(Encoding.UTF8.GetBytes(metaJson), null, DataProtectionScope.CurrentUser);
+            await File.WriteAllBytesAsync(MetaFilePath, encryptedMeta);
         }
 
         /// <summary>
@@ -48,32 +51,25 @@ namespace Client.Core.Comms.Services
         /// </returns>
         public async Task<(string AccessToken, string RefreshToken)> LoadTokenAndRefreshAsync()
         {
-            string accessToken = string.Empty;
-            string refreshToken = string.Empty;
+            var accessToken = await LoadTokenAsync();
+            if (accessToken == null) return ("", "");
 
-            if (File.Exists(AccessTokenFile))
+            try
             {
-                try
-                {
-                    var encryptedAccess = await File.ReadAllBytesAsync(AccessTokenFile);
-                    var decryptedAccess = ProtectedData.Unprotect(encryptedAccess, null, DataProtectionScope.CurrentUser);
-                    accessToken = Encoding.UTF8.GetString(decryptedAccess);
-                }
-                catch { }
-            }
+                if (!File.Exists(MetaFilePath)) return (accessToken, "");
 
-            if (File.Exists(RefreshTokenFile))
+                var encryptedMeta = await File.ReadAllBytesAsync(MetaFilePath);
+                var decryptedMeta = ProtectedData.Unprotect(encryptedMeta, null, DataProtectionScope.CurrentUser);
+                var json = Encoding.UTF8.GetString(decryptedMeta);
+                var meta = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+
+                var refreshToken = meta?["RefreshToken"]?.ToString() ?? "";
+                return (accessToken, refreshToken);
+            }
+            catch
             {
-                try
-                {
-                    var encryptedRefresh = await File.ReadAllBytesAsync(RefreshTokenFile);
-                    var decryptedRefresh = ProtectedData.Unprotect(encryptedRefresh, null, DataProtectionScope.CurrentUser);
-                    refreshToken = Encoding.UTF8.GetString(decryptedRefresh);
-                }
-                catch { }
+                return (accessToken, "");
             }
-
-            return (accessToken, refreshToken);
         }
 
         /// <summary>
@@ -82,20 +78,20 @@ namespace Client.Core.Comms.Services
         /// <returns>
         /// The access token as a string, or an empty string if not found or decryption fails.
         /// </returns>
-        public async Task<string> LoadTokenAsync()
+        public async Task<string?> LoadTokenAsync()
         {
-            if (!File.Exists(AccessTokenFile))
-                return string.Empty;
-
             try
             {
+                if (!File.Exists(AccessTokenFile)) return null;
+
                 var encrypted = await File.ReadAllBytesAsync(AccessTokenFile);
                 var decrypted = ProtectedData.Unprotect(encrypted, null, DataProtectionScope.CurrentUser);
                 return Encoding.UTF8.GetString(decrypted);
             }
             catch
             {
-                return string.Empty;
+                await DeleteTokenAsync(); // Wipe corrupted files
+                return null;
             }
         }
 
@@ -103,15 +99,11 @@ namespace Client.Core.Comms.Services
         /// Deletes both the access and refresh token files from disk.
         /// </summary>
         /// <returns>A completed task.</returns>
-        public Task DeleteTokenAsync()
+        public async Task DeleteTokenAsync()
         {
-            if (File.Exists(AccessTokenFile))
-                File.Delete(AccessTokenFile);
-
-            if (File.Exists(RefreshTokenFile))
-                File.Delete(RefreshTokenFile);
-
-            return Task.CompletedTask;
+            try { if (File.Exists(AccessTokenFile)) File.Delete(AccessTokenFile); } catch { }
+            try { if (File.Exists(MetaFilePath)) File.Delete(MetaFilePath); } catch { }
+            await Task.CompletedTask;
         }
     }
 }
