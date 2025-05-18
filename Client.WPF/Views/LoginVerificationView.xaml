@@ -1,0 +1,375 @@
+﻿<UserControl x:Class="Client.WPF.Views.LoginVerificationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Client.WPF.Views"
+             mc:Ignorable="d"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:behaviors="clr-namespace:Client.WPF.Behaviors"
+             d:DesignHeight="450"
+             d:DesignWidth="800">
+    <Grid Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
+        <Grid.Triggers>
+            <EventTrigger RoutedEvent="UserControl.Loaded">
+                <BeginStoryboard>
+                    <Storyboard x:Name="FadeInStoryboard">
+                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                         From="0"
+                                         To="1"
+                                         Duration="0:0:1.5" />
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Grid.Triggers>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="200" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0"
+                Background="#9c27b0"
+                BorderThickness="0">
+            <Grid VerticalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.ColumnSpan="11"
+                        Height="150"
+                        Margin="-100 0 0 -50"
+                        VerticalAlignment="Bottom"
+                        HorizontalAlignment="Left">
+                    <Path Data="M 10,70 C 0,70 0,50 15,45 C 10,30 30,20 40,30 C 50,15 70,15 80,30 C 90,20 110,30 115,45 C 130,50 130,70 120,70 Z"
+                          Stretch="Uniform">
+                        <Path.Fill>
+                            <SolidColorBrush Color="White"
+                                             Opacity=".3" />
+                        </Path.Fill>
+                        <Path.LayoutTransform>
+                            <ScaleTransform ScaleX="-1" />
+                        </Path.LayoutTransform>
+                    </Path>
+                </Border>
+
+                <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Top"
+                            Grid.ColumnSpan="11"
+                            Margin="20 40 0 0"
+                            Opacity=".3">
+                    <Grid Margin="0 0 20 0"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Center">
+                        <Rectangle Fill="White"
+                                   Height="48"
+                                   Width="48"
+                                   Stretch="Uniform">
+                            <Rectangle.OpacityMask>
+                                <ImageBrush ImageSource="/Resources/Views/Splash/splash_outline_icon_01.png"
+                                            Stretch="Uniform" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                    </Grid>
+
+                    <Grid Margin="0 0 20 0"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center">
+                        <Rectangle Fill="White"
+                                   Height="48"
+                                   Width="48"
+                                   Stretch="Uniform">
+                            <Rectangle.OpacityMask>
+                                <ImageBrush ImageSource="/Resources/Views/Splash/splash_outline_icon_02.png"
+                                            Stretch="Uniform" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                    </Grid>
+
+                    <Grid Margin="0 0 0 0"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center">
+                        <Rectangle Fill="White"
+                                   Height="48"
+                                   Width="48"
+                                   Stretch="Uniform">
+                            <Rectangle.OpacityMask>
+                                <ImageBrush ImageSource="/Resources/Views/Splash/splash_outline_icon_03.png"
+                                            Stretch="Uniform" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                    </Grid>
+
+                </StackPanel>
+
+                <Image Grid.Column="0"
+                       Grid.ColumnSpan="11"
+                       Source="/Resources/Icons/rasaaill_256.png"
+                       Height="200"
+                       Width="200"
+                       Stretch="Uniform"
+                       RenderOptions.BitmapScalingMode="HighQuality"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center" />
+
+                <Border Grid.ColumnSpan="11"
+                        Height="150"
+                        Margin="0 0 -100 -50"
+                        VerticalAlignment="Bottom"
+                        HorizontalAlignment="Right">
+                    <Path Data="M 10,70 C 0,70 0,50 15,45 C 10,30 30,20 40,30 C 50,15 70,15 80,30 C 90,20 110,30 115,45 C 130,50 130,70 120,70 Z"
+                          Stretch="Uniform">
+                        <Path.Fill>
+                            <SolidColorBrush Color="White"
+                                             Opacity=".3" />
+                        </Path.Fill>
+                    </Path>
+                </Border>
+
+
+
+                <Image Grid.Column="0"
+                       Grid.ColumnSpan="11"
+                       Source="/Resources/Icons/rasaaill_256.png"
+                       Height="200"
+                       Width="200"
+                       Stretch="Uniform"
+                       RenderOptions.BitmapScalingMode="HighQuality"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center" />
+
+                <Border Grid.ColumnSpan="11"
+                        Height="150"
+                        Margin="0 0 -100 -50"
+                        VerticalAlignment="Bottom"
+                        HorizontalAlignment="Right">
+                    <Path Data="M 10,70 C 0,70 0,50 15,45 C 10,30 30,20 40,30 C 50,15 70,15 80,30 C 90,20 110,30 115,45 C 130,50 130,70 120,70 Z"
+                          Stretch="Uniform">
+                        <Path.Fill>
+                            <SolidColorBrush Color="White"
+                                             Opacity=".3" />
+                        </Path.Fill>
+                    </Path>
+                </Border>
+
+
+
+                <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Right"
+                            Grid.ColumnSpan="11"
+                            Margin="0 40 20 0"
+                            Opacity=".3">
+                    <Grid Margin="0 0 0 0"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Center">
+                        <Rectangle Fill="White"
+                                   Height="48"
+                                   Width="48"
+                                   Stretch="Uniform">
+                            <Rectangle.OpacityMask>
+                                <ImageBrush ImageSource="/Resources/Views/Splash/splash_outline_icon_04.png"
+                                            Stretch="Uniform" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                    </Grid>
+
+                    <Grid Margin="20 0 0 0"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center">
+                        <Rectangle Fill="White"
+                                   Height="48"
+                                   Width="48"
+                                   Stretch="Uniform">
+                            <Rectangle.OpacityMask>
+                                <ImageBrush ImageSource="/Resources/Views/Splash/splash_outline_icon_05.png"
+                                            Stretch="Uniform" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                    </Grid>
+
+                    <Grid Margin="20 0 0 0"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center">
+                        <Rectangle Fill="White"
+                                   Height="48"
+                                   Width="48"
+                                   Stretch="Uniform">
+                            <Rectangle.OpacityMask>
+                                <ImageBrush ImageSource="/Resources/Views/Splash/splash_outline_icon_06.png"
+                                            Stretch="Uniform" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                    </Grid>
+
+                </StackPanel>
+
+            </Grid>
+        </Border>
+
+        <Grid Grid.RowSpan="2"
+              Panel.ZIndex="1"
+              Visibility="{Binding IsVerifying, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Grid.Background>
+                <SolidColorBrush Color="Black"
+                                 Opacity=".7" />
+            </Grid.Background>
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                <md:PackIcon Width="128"
+                             Height="128"
+                             Foreground="#000"
+                             Kind="Refresh">
+                    <md:PackIcon.RenderTransform>
+                        <RotateTransform x:Name="SpinnerRotate"
+                                         CenterX="64"
+                                         CenterY="64" />
+                    </md:PackIcon.RenderTransform>
+                    <md:PackIcon.Triggers>
+                        <EventTrigger RoutedEvent="Loaded">
+                            <BeginStoryboard>
+                                <Storyboard RepeatBehavior="Forever">
+                                    <DoubleAnimation Storyboard.TargetName="SpinnerRotate"
+                                                     Storyboard.TargetProperty="Angle"
+                                                     From="0"
+                                                     To="360"
+                                                     Duration="0:0:1" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </md:PackIcon.Triggers>
+                </md:PackIcon>
+                <TextBlock Text="Loading..."
+                           Foreground="#000"
+                           FontWeight="Bold"
+                           Margin="0,10,0,0"
+                           FontSize="30"
+                           HorizontalAlignment="Center" />
+            </StackPanel>
+        </Grid>
+        <!--Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"-->
+        <!--BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"-->
+        <!-- Your splash layout here -->
+        <StackPanel Grid.Row="1"
+                    Opacity="1"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center">
+
+            <TextBlock Text="{Binding EmailAddress}"
+                       Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                       Margin="0 0 0 10"
+                       FontWeight="ExtraBold"
+                       FontSize="25"
+                       HorizontalAlignment="Left"
+                       TextAlignment="Left" />
+
+            <TextBlock Text="A code was sent via Rasaaill to your email address..."
+                       Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                       Margin="0 0 0 10"
+                       HorizontalAlignment="Left"
+                       TextAlignment="Left" />
+
+            <TextBlock Text="Enter Verification Code"
+                       Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                       Margin="0 0 0 20"
+                       HorizontalAlignment="Left"
+                       TextAlignment="Left" />
+
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        Margin="0 50 0 50">
+                <TextBox Style="{StaticResource MaterialDesignFilledTextBox}"
+                         Width="50"
+                         md:TextFieldAssist.CharacterCounterVisibility="Hidden"
+                         MaxLength="1"
+                         TextAlignment="Center"
+                         FontSize="30"
+                         Margin="5 0"
+                         behaviors:TextBoxBehaviors.AutoAdvanceOnTextChange="True"
+                         IsInactiveSelectionHighlightEnabled="True"
+                         Text="{Binding Digit1, UpdateSourceTrigger=PropertyChanged}"
+                         InputScope="Number" />
+                <TextBox Style="{StaticResource MaterialDesignFilledTextBox}"
+                         Width="50"
+                         md:TextFieldAssist.CharacterCounterVisibility="Hidden"
+                         MaxLength="1"
+                         TextAlignment="Center"
+                         FontSize="30"
+                         Margin="5 0"
+                         behaviors:TextBoxBehaviors.AutoAdvanceOnTextChange="True"
+                         Text="{Binding Digit2, UpdateSourceTrigger=PropertyChanged}"
+                         InputScope="Number" />
+                <TextBox Style="{StaticResource MaterialDesignFilledTextBox}"
+                         Width="50"
+                         md:TextFieldAssist.CharacterCounterVisibility="Hidden"
+                         MaxLength="1"
+                         TextAlignment="Center"
+                         FontSize="30"
+                         Margin="5 0"
+                         behaviors:TextBoxBehaviors.AutoAdvanceOnTextChange="True"
+                         Text="{Binding Digit3, UpdateSourceTrigger=PropertyChanged}"
+                         InputScope="Number" />
+                <TextBox Style="{StaticResource MaterialDesignFilledTextBox}"
+                         Width="50"
+                         md:TextFieldAssist.CharacterCounterVisibility="Hidden"
+                         MaxLength="1"
+                         TextAlignment="Center"
+                         FontSize="30"
+                         Margin="5 0"
+                         behaviors:TextBoxBehaviors.AutoAdvanceOnTextChange="True"
+                         Text="{Binding Digit4, UpdateSourceTrigger=PropertyChanged}"
+                         InputScope="Number" />
+                <TextBox Style="{StaticResource MaterialDesignFilledTextBox}"
+                         Width="50"
+                         md:TextFieldAssist.CharacterCounterVisibility="Hidden"
+                         MaxLength="1"
+                         TextAlignment="Center"
+                         FontSize="30"
+                         Margin="5 0"
+                         behaviors:TextBoxBehaviors.AutoAdvanceOnTextChange="True"
+                         Text="{Binding Digit5, UpdateSourceTrigger=PropertyChanged}"
+                         InputScope="Number" />
+                <TextBox Style="{StaticResource MaterialDesignFilledTextBox}"
+                         Width="50"
+                         md:TextFieldAssist.CharacterCounterVisibility="Hidden"
+                         MaxLength="1"
+                         TextAlignment="Center"
+                         FontSize="30"
+                         Margin="5 0"
+                         behaviors:TextBoxBehaviors.AutoAdvanceOnTextChange="True"
+                         Text="{Binding Digit6, UpdateSourceTrigger=PropertyChanged}"
+                         InputScope="Number" />
+            </StackPanel>
+
+            <TextBlock Text="{Binding ErrorMessage}"
+                       Foreground="{DynamicResource MaterialDesignValidationErrorBrush}"
+                       HorizontalAlignment="Center"
+                       Margin="0 0 0 20"
+                       Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}}" />
+            <Button Content="Verify"
+                    Style="{StaticResource MaterialDesignRaisedButton}"
+                    Width="200"
+                    Height="50"
+                    Command="{Binding VerifyCommand}" />
+
+            <TextBlock Text="{Binding RemainingTimeDisplay}"
+                       HorizontalAlignment="Center"
+                       Margin="0 20 0 0" />
+
+            <Button Content="Resend the code again."
+                    Style="{StaticResource MaterialDesignFlatButton}"
+                    HorizontalAlignment="Center"
+                    Command="{Binding ResendCodeCommand}"
+                    Margin="0 20 0 20" />
+
+        </StackPanel>
+    </Grid>
+</UserControl>

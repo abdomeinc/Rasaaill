@@ -27,6 +27,7 @@ namespace Client.Core.Helpers
             {
                 Id = Guid.Parse(claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? ""),
                 DisplayName = claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value ?? "",
+                PhoneNumber = claims.FirstOrDefault(c => c.Type == ClaimTypes.MobilePhone)?.Value ?? "",
                 EmailAddress = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value ?? "",
                 AvatarUrl = claims.FirstOrDefault(c => c.Type == "avatar_url")?.Value ?? "",
                 IsApproved = bool.Parse(claims.FirstOrDefault(c => c.Type == "is_approved")?.Value ?? "false"),

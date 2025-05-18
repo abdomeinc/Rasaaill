@@ -1,82 +1,103 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Windows;
+using System.Windows.Threading;
+using Microsoft.Extensions.Configuration;
+using System.IO;
 
 namespace Client.WPF
 {
-    public partial class App : Application
+    public partial class App
     {
 
-        private IHost? _host;
-
-        protected override void OnStartup(StartupEventArgs e)
-        {
-            _host = Host.CreateDefaultBuilder()
+        private static readonly IHost _host = Host.CreateDefaultBuilder()
+            .ConfigureAppConfiguration(c => { c.SetBasePath(Path.GetDirectoryName(AppContext.BaseDirectory) ?? @"C:\"); })
                 .ConfigureServices((context, services) =>
                 {
+
+
                     ConfigureServices(services);
                 })
                 .Build();
 
-            _host.Start();
-
-
-            // Start main window    
-            var mainWindow = new MainWindow
-            {
-                DataContext = _host.Services.GetRequiredService<ViewModels.MainViewModel>()
-            };
-
-            mainWindow.Show();
-
-            base.OnStartup(e);
-        }
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
 
         }
 
-        private void ConfigureServices(IServiceCollection services)
+        private static void ConfigureServices(IServiceCollection services)
         {
             // Register HttpClient with base address
-            services.AddHttpClient<Core.Comms.Services.Interfaces.IAuthService, Core.Comms.Services.AuthService>(client =>
+            _ = services.AddHttpClient<Core.Comms.Services.Interfaces.IAuthService, Core.Comms.Services.AuthService>(client =>
             {
-                client.BaseAddress = new Uri("https://your-api-base-url/");
+                client.BaseAddress = new Uri("http://localhost:5000");
             });
 
             // Core services
-            services.AddSingleton<Core.Comms.Services.Interfaces.ITokenStorageService, Core.Comms.Services.TokenStorageService>();
+            _ = services.AddSingleton<Core.Comms.Services.Interfaces.ITokenStorageService, Core.Comms.Services.TokenStorageService>();
+            _ = services.AddSingleton<Services.Interfaces.INavigateService, Services.NavigateService>();
+            _ = services.AddSingleton<Services.Interfaces.IUserStore, Services.UserStore>();
+            _ = services.AddSingleton<Services.Interfaces.IConversationGeneratorService, Services.ConversationGeneratorService>();
+
 
             // ViewModels
-            services.AddTransient<ViewModels.MainViewModel>();
+            _ = services.AddTransient<ViewModels.MainViewModel>();
 
-            services.AddTransient<ViewModels.SplashViewModel>();
-            services.AddTransient<ViewModels.LoginViewModel>();
-            services.AddTransient<ViewModels.VerificationCodeViewModel>();
+            _ = services.AddTransient<ViewModels.SplashViewModel>();
+            _ = services.AddTransient<ViewModels.LoginViewModel>();
+            _ = services.AddTransient<ViewModels.LoginVerificationViewModel>();
+            _ = services.AddTransient<ViewModels.VerificationCodeViewModel>();
 
-            services.AddTransient<ViewModels.ConversationsViewModel>();
-            services.AddTransient<ViewModels.ConversationViewModel>();
+            _ = services.AddTransient<ViewModels.ConversationsViewModel>();
+            _ = services.AddTransient<ViewModels.ConversationViewModel>();
 
-            services.AddTransient<ViewModels.SettingsViewModel>();
-            services.AddTransient<ViewModels.ProfileViewModel>();
+            _ = services.AddTransient<ViewModels.SettingsViewModel>();
+            _ = services.AddTransient<ViewModels.ProfileViewModel>();
 
-            // Views
-            services.AddSingleton<MainWindow>();
-            services.AddSingleton<Views.LoginView>();
-
-            // Register other services
-            // services.AddHttpClient<IAuthService, AuthService>();
-            // services.AddSingleton<IOtherService, OtherService>();
+            _ = services.AddTransient<MainWindow>();
         }
 
-        protected override async void OnExit(ExitEventArgs e)
-        {
-            if (_host != null)
-                await _host.StopAsync();
 
-            base.OnExit(e);
+
+        /// <summary>
+        /// Gets services.
+        /// </summary>
+        public static IServiceProvider Services
+        {
+            get { return _host.Services; }
+        }
+
+        /// <summary>
+        /// Occurs when the application is loading.
+        /// </summary>
+        private async void OnStartup(object sender, StartupEventArgs e)
+        {
+            await _host.StartAsync();
+
+            // Start main window    
+            MainWindow mainWindow = /*new()*/_host.Services.GetRequiredService<MainWindow>();
+            mainWindow.DataContext = _host.Services.GetRequiredService<ViewModels.MainViewModel>();
+
+            mainWindow.Show();
+        }
+
+        /// <summary>
+        /// Occurs when the application is closing.
+        /// </summary>
+        private async void OnExit(object sender, ExitEventArgs e)
+        {
+            await _host.StopAsync();
+
+            _host.Dispose();
+        }
+
+        /// <summary>
+        /// Occurs when an exception is thrown by an application but not handled.
+        /// </summary>
+        private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            // For more info see https://docs.microsoft.com/en-us/dotnet/api/system.windows.application.dispatcherunhandledexception?view=windowsdesktop-6.0
         }
     }
-
 }

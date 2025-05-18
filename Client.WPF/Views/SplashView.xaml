@@ -1,12 +1,259 @@
 ﻿<UserControl x:Class="Client.WPF.Views.SplashView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Client.WPF.Views"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
+             mc:Ignorable="d"
+             d:DesignHeight="768"
+             d:DesignWidth="1024"
+             x:Name="SplashRoot">
+    <Grid Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
+        <Grid.Triggers>
+            <EventTrigger RoutedEvent="UserControl.Loaded">
+                <BeginStoryboard>
+                    <Storyboard x:Name="FadeInStoryboard">
+                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                         From="0"
+                                         To="1"
+                                         Duration="0:0:1.5" />
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Grid.Triggers>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="200" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0"
+                Background="#9c27b0"
+                BorderThickness="0">
+            <Grid VerticalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.ColumnSpan="11"
+                        Height="150"
+                        Margin="-100 0 0 -50"
+                        VerticalAlignment="Bottom"
+                        HorizontalAlignment="Left">
+                    <Path Data="M 10,70 C 0,70 0,50 15,45 C 10,30 30,20 40,30 C 50,15 70,15 80,30 C 90,20 110,30 115,45 C 130,50 130,70 120,70 Z"
+                          Stretch="Uniform">
+                        <Path.Fill>
+                            <SolidColorBrush Color="White"
+                                             Opacity=".3" />
+                        </Path.Fill>
+                        <Path.LayoutTransform>
+                            <ScaleTransform ScaleX="-1" />
+                        </Path.LayoutTransform>
+                    </Path>
+                </Border>
+
+                <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Top"
+                            Grid.ColumnSpan="11"
+                            Margin="20 40 0 0"
+                            Opacity=".3">
+                    <Grid Margin="0 0 20 0"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Center">
+                        <Rectangle Fill="White"
+                                   Height="48"
+                                   Width="48"
+                                   Stretch="Uniform">
+                            <Rectangle.OpacityMask>
+                                <ImageBrush ImageSource="/Resources/Views/Splash/splash_outline_icon_01.png"
+                                            Stretch="Uniform" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                    </Grid>
+
+                    <Grid Margin="0 0 20 0"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center">
+                        <Rectangle Fill="White"
+                                   Height="48"
+                                   Width="48"
+                                   Stretch="Uniform">
+                            <Rectangle.OpacityMask>
+                                <ImageBrush ImageSource="/Resources/Views/Splash/splash_outline_icon_02.png"
+                                            Stretch="Uniform" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                    </Grid>
+
+                    <Grid Margin="0 0 0 0"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center">
+                        <Rectangle Fill="White"
+                                   Height="48"
+                                   Width="48"
+                                   Stretch="Uniform">
+                            <Rectangle.OpacityMask>
+                                <ImageBrush ImageSource="/Resources/Views/Splash/splash_outline_icon_03.png"
+                                            Stretch="Uniform" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                    </Grid>
+
+                </StackPanel>
+
+                <Image Grid.Column="0"
+                       Grid.ColumnSpan="11"
+                       Source="/Resources/Icons/rasaaill_256.png"
+                       Height="200"
+                       Width="200"
+                       Stretch="Uniform"
+                       RenderOptions.BitmapScalingMode="HighQuality"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center" />
+
+                <Border Grid.ColumnSpan="11"
+                        Height="150"
+                        Margin="0 0 -100 -50"
+                        VerticalAlignment="Bottom"
+                        HorizontalAlignment="Right">
+                    <Path Data="M 10,70 C 0,70 0,50 15,45 C 10,30 30,20 40,30 C 50,15 70,15 80,30 C 90,20 110,30 115,45 C 130,50 130,70 120,70 Z"
+                          Stretch="Uniform">
+                        <Path.Fill>
+                            <SolidColorBrush Color="White"
+                                             Opacity=".3" />
+                        </Path.Fill>
+                    </Path>
+                </Border>
+
+
+
+                <Image Grid.Column="0"
+                       Grid.ColumnSpan="11"
+                       Source="/Resources/Icons/rasaaill_256.png"
+                       Height="200"
+                       Width="200"
+                       Stretch="Uniform"
+                       RenderOptions.BitmapScalingMode="HighQuality"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center" />
+
+                <Border Grid.ColumnSpan="11"
+                        Height="150"
+                        Margin="0 0 -100 -50"
+                        VerticalAlignment="Bottom"
+                        HorizontalAlignment="Right">
+                    <Path Data="M 10,70 C 0,70 0,50 15,45 C 10,30 30,20 40,30 C 50,15 70,15 80,30 C 90,20 110,30 115,45 C 130,50 130,70 120,70 Z"
+                          Stretch="Uniform">
+                        <Path.Fill>
+                            <SolidColorBrush Color="White"
+                                             Opacity=".3" />
+                        </Path.Fill>
+                    </Path>
+                </Border>
+
+
+
+                <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Right"
+                            Grid.ColumnSpan="11"
+                            Margin="0 40 20 0"
+                            Opacity=".3">
+                    <Grid Margin="0 0 0 0"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Center">
+                        <Rectangle Fill="White"
+                                   Height="48"
+                                   Width="48"
+                                   Stretch="Uniform">
+                            <Rectangle.OpacityMask>
+                                <ImageBrush ImageSource="/Resources/Views/Splash/splash_outline_icon_04.png"
+                                            Stretch="Uniform" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                    </Grid>
+
+                    <Grid Margin="20 0 0 0"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center">
+                        <Rectangle Fill="White"
+                                   Height="48"
+                                   Width="48"
+                                   Stretch="Uniform">
+                            <Rectangle.OpacityMask>
+                                <ImageBrush ImageSource="/Resources/Views/Splash/splash_outline_icon_05.png"
+                                            Stretch="Uniform" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                    </Grid>
+
+                    <Grid Margin="20 0 0 0"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center">
+                        <Rectangle Fill="White"
+                                   Height="48"
+                                   Width="48"
+                                   Stretch="Uniform">
+                            <Rectangle.OpacityMask>
+                                <ImageBrush ImageSource="/Resources/Views/Splash/splash_outline_icon_06.png"
+                                            Stretch="Uniform" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                    </Grid>
+
+                </StackPanel>
+
+            </Grid>
+        </Border>
+
+        <!--Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"-->
+        <!--BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"-->
+        <!-- Your splash layout here -->
+        <Grid Grid.Row="1"
+              Opacity="1"
+              VerticalAlignment="Center"
+              HorizontalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                       Text="Rasaaill | Instant Messages"
+                       FontSize="30"
+                       FontWeight="Bold" />
+            <TextBlock Grid.Row="1"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                       Text="Welcome to Rasaaill | Instant Messages application."
+                       FontSize="20"
+                       Margin="0,10,0,0" />
+            <TextBlock Grid.Row="2"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                       Text="It's fast and secure."
+                       FontSize="20"
+                       Margin="0,10,0,0" />
+            <Button Grid.Row="3"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Content="Start Messaging"
+                    Padding="15 0"
+                    Height="50"
+                    FontSize="20"
+                    Margin="0,50,0,0"
+                    Command="{Binding NavigateToLoginCommand}" />
+        </Grid>
     </Grid>
 </UserControl>

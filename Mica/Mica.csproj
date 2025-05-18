@@ -1,0 +1,98 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net9.0-windows</TargetFramework>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<ApplicationIcon>wpfui-icon.ico</ApplicationIcon>
+		<UseWPF>true</UseWPF>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Content Include="wpfui-icon.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="WPF-UI" Version="4.0.2" />
+		<PackageReference Include="WPF-UI.DependencyInjection" Version="4.0.2" />
+
+
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+		<PackageReference Include="MaterialDesignThemes" Version="5.2.1" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.5" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.5" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="9.0.5" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.5" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Remove="Assets\wpfui-icon-256.png" />
+		<None Remove="Assets\wpfui-icon-1024.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Client.Core\Client.Core.csproj" />
+	  <ProjectReference Include="..\Shared\Shared.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Resource Include="Assets\wpfui-icon-256.png" />
+		<Resource Include="Assets\wpfui-icon-1024.png" />
+		<Resource Include="Resources\Icons\rasaaill_128.png" />
+		<Resource Include="Resources\Icons\rasaaill_16.png" />
+		<Resource Include="Resources\Icons\rasaaill_24.png" />
+		<Resource Include="Resources\Icons\rasaaill_256.png" />
+		<Resource Include="Resources\Icons\rasaaill_32.png" />
+		<Resource Include="Resources\Icons\rasaaill_512.png" />
+		<Resource Include="Resources\Icons\rasaaill_64.png" />
+		<Resource Include="Resources\Views\Splash\cloud-computing.png" />
+		<Resource Include="Resources\Views\Splash\cloud.png" />
+		<Resource Include="Resources\Views\Splash\spalsh_icon_01.png" />
+		<Resource Include="Resources\Views\Splash\spalsh_icon_02.png" />
+		<Resource Include="Resources\Views\Splash\spalsh_icon_03.png" />
+		<Resource Include="Resources\Views\Splash\spalsh_icon_04.png" />
+		<Resource Include="Resources\Views\Splash\spalsh_icon_05.png" />
+		<Resource Include="Resources\Views\Splash\spalsh_icon_06.png" />
+		<Resource Include="Resources\Views\Splash\spalsh_icon_07.png" />
+		<Resource Include="Resources\Views\Splash\spalsh_icon_08.png" />
+		<Resource Include="Resources\Views\Splash\spalsh_icon_09.png" />
+		<Resource Include="Resources\Views\Splash\spalsh_icon_10.png" />
+		<Resource Include="Resources\Views\Splash\spalsh_icon_11.png" />
+		<Resource Include="Resources\Views\Splash\splash_outline_icon_01.png" />
+		<Resource Include="Resources\Views\Splash\splash_outline_icon_02.png" />
+		<Resource Include="Resources\Views\Splash\splash_outline_icon_03.png" />
+		<Resource Include="Resources\Views\Splash\splash_outline_icon_04.png" />
+		<Resource Include="Resources\Views\Splash\splash_outline_icon_05.png" />
+		<Resource Include="Resources\Views\Splash\splash_outline_icon_06.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Update="Views\ConversationsView.xaml.cs">
+			<SubType>Code</SubType>
+		</Compile>
+		<Compile Update="Views\ConversationView.xaml.cs">
+			<SubType>Code</SubType>
+		</Compile>
+		<Compile Update="Views\LoginVerificationView.xaml.cs">
+			<SubType>Code</SubType>
+		</Compile>
+		<Compile Update="Views\LoginView.xaml.cs">
+			<SubType>Code</SubType>
+		</Compile>
+		<Compile Update="Views\ProfileView.xaml.cs">
+			<SubType>Code</SubType>
+		</Compile>
+		<Compile Update="Views\SettingsView.xaml.cs">
+			<SubType>Code</SubType>
+		</Compile>
+		<Compile Update="Views\SplashView.xaml.cs">
+			<SubType>Code</SubType>
+		</Compile>
+		<Compile Update="Views\VerificationCodeView.xaml.cs">
+			<SubType>Code</SubType>
+		</Compile>
+	</ItemGroup>
+
+</Project>

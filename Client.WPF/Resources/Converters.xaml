@@ -1,0 +1,20 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:con="clr-namespace:Client.WPF.Converters">
+
+    <!-- Define converters FIRST -->
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    <con:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+    <con:BoolToStatusConverter x:Key="BoolToStatusConverter" />
+    <con:BoolToColorBrushConverter x:Key="BoolToBrushConverter" />
+    <!-- Add all other converters here -->
+    <con:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+
+    <con:IntCountToVisibilityConverter x:Key="IntCountToVisibilityConverter" />
+    <con:BoolToStringSymbolConverter x:Key="BoolToStringSymbolConverter" />
+    <con:MessageStateToIconConverter x:Key="MessageStateToIconConverter" />
+    <con:ByteToImageConverter x:Key="ByteToImageConverter" />
+    <con:BubbleColumnConverter x:Key="BubbleColumnConverter" />
+    <con:BubbleColorConverter x:Key="BubbleColorConverter" />
+    <con:BoolToStyleConverter x:Key="BoolToStyleConverter" />
+</ResourceDictionary>

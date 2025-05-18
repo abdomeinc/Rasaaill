@@ -1,17 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Collections.Specialized;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Client.WPF.Views
 {
@@ -23,6 +11,44 @@ namespace Client.WPF.Views
         public ConversationView()
         {
             InitializeComponent();
+
+            Loaded += ConversationView_Loaded;
+        }
+
+        private void ConversationView_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            // Also try once at load
+            SubscribeToMessagesCollection();
+            ScrollToBottom();
+        }
+
+
+        private void SubscribeToMessagesCollection()
+        {
+            if (DataContext is ViewModels.ConversationViewModel vm && vm.Conversation?.Messages is INotifyCollectionChanged messages)
+            {
+                messages.CollectionChanged += Messages_CollectionChanged;
+            }
+        }
+
+        private void Messages_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                // Scroll to bottom on UI thread
+                Dispatcher.InvokeAsync(() =>
+                {
+                    ScrollToBottom();
+                });
+            }
+        }
+
+        private void ScrollToBottom()
+        {
+            if (MessagesListBox.Items.Count == 0) return;
+
+            var lastItem = MessagesListBox.Items[MessagesListBox.Items.Count - 1];
+            MessagesListBox.ScrollIntoView(lastItem);
         }
     }
 }

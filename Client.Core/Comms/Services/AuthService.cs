@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
@@ -128,6 +129,11 @@ namespace Client.Core.Comms.Services
 
             // Set access token and mark user as authenticated
             AccessToken = token;
+
+
+
+
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken);
 
             // Optionally decode token and set CurrentUser here
             IsAuthenticated = true;

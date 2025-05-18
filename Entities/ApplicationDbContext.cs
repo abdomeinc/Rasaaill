@@ -6,11 +6,11 @@ namespace Entities
 {
     public class ApplicationDbContext : IdentityDbContext<Models.User, IdentityRole<Guid>, Guid>
     {
-        public DbSet<Models.Conversation> Conversations { get; set; }
-        public DbSet<Models.ConversationParticipant> ConversationParticipants { get; set; }
-        public DbSet<Models.Message> Messages { get; set; }
-        public DbSet<Models.EmailVerification> EmailVerifications { get; set; }
-        public DbSet<Models.RefreshToken> RefreshTokens { get; set; }
+        public DbSet<Models.Conversation> Conversations { get; set; } = default!;
+        public DbSet<Models.ConversationParticipant> ConversationParticipants { get; set; } = default!;
+        public DbSet<Models.Message> Messages { get; set; } = default!;
+        public DbSet<Models.EmailVerification> EmailVerifications { get; set; } = default!;
+        public DbSet<Models.RefreshToken> RefreshTokens { get; set; } = default!;
 
 
 

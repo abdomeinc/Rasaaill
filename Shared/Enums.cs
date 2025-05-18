@@ -1,5 +1,41 @@
 ﻿namespace Shared
 {
+    public enum ScreenType : int
+    {
+        /// <summary>
+        /// The main screen of the application.
+        /// </summary>
+        //Main,
+        /// <summary>
+        /// The splash screen shown during startup.
+        /// </summary>
+        Splash,
+        /// <summary>
+        /// The login screen for user authentication.
+        /// </summary>
+        Login,
+        /// <summary>
+        /// The Verification screen for user login verification.
+        /// </summary>
+        Verification,
+        /// <summary>
+        /// The conversations screen.
+        /// </summary>
+        Conversations,
+        /// <summary>
+        /// The selected conversation screen.
+        /// </summary>
+        //Conversation,
+        /// <summary>
+        /// The settings screen for user preferences.
+        /// </summary>
+        Settings,
+        /// <summary>
+        /// The profile screen for user information.
+        /// </summary>
+        Profile,
+    }
+
     /// <summary>
     /// Specifies the type of conversation.
     /// </summary>

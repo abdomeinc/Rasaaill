@@ -21,6 +21,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudSync.Cloudinary", "Clo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Services", "Shared.Services\Shared.Services.csproj", "{5771B2D6-0177-4508-B159-8FABA57E8E87}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mica", "Mica\Mica.csproj", "{E472B121-3660-4781-900D-6F96552CA2BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApp1", "WpfApp1\WpfApp1.csproj", "{146726B9-BF73-4A72-A70B-8132371B16F2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +67,14 @@ Global
 		{5771B2D6-0177-4508-B159-8FABA57E8E87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5771B2D6-0177-4508-B159-8FABA57E8E87}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5771B2D6-0177-4508-B159-8FABA57E8E87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E472B121-3660-4781-900D-6F96552CA2BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E472B121-3660-4781-900D-6F96552CA2BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E472B121-3660-4781-900D-6F96552CA2BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E472B121-3660-4781-900D-6F96552CA2BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{146726B9-BF73-4A72-A70B-8132371B16F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{146726B9-BF73-4A72-A70B-8132371B16F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{146726B9-BF73-4A72-A70B-8132371B16F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{146726B9-BF73-4A72-A70B-8132371B16F2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

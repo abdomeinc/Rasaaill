@@ -12,6 +12,8 @@
 
         public Guid SenderId { get; set; }
 
+        public UserDto Sender { get; set; } = default!;
+
         public string Content { get; set; } = string.Empty;
 
         public DateTime Timestamp { get; set; }
@@ -27,10 +29,20 @@
         // For media (Image, Video or Document) message
         public string FileName { get; set; } = string.Empty;
 
+        public string LocalFilePath { get; set; } = string.Empty;
+
         public long FileSize { get; set; }
+
+        public byte[] FilePreview { get; set; } = [];
 
         public string CloudUrl { get; set; } = string.Empty;
 
         public string CloudFilePreviewUrl { get; set; } = string.Empty;
+
+
+        public bool IsSender { get; set; }
+
+        // 🆕 Add this line for emoji reactions:
+        public List<string> Reactions { get; set; } = new();
     }
 }

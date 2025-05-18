@@ -5,8 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client.WPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="{Binding ApplicationTitle}"
+        MinHeight="768"
+        MinWidth="1024"
+        WindowState="Maximized"
+        xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        xmlns:pages="clr-namespace:Client.WPF.ViewModels"
+        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+        WindowStartupLocation="CenterScreen"
+        Icon="/Resources/Icons/rasaaill_64.png">
 
+    <Grid>
+        <ContentPresenter Content="{Binding CurrentViewModel}" />
     </Grid>
 </Window>

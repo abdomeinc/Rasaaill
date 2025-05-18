@@ -1,12 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CommunityToolkit.Mvvm.Input;
 
 namespace Client.WPF.ViewModels
 {
-    public class SplashViewModel : ViewModelBase
+    public partial class SplashViewModel : ViewModelBase
     {
+        private readonly Services.Interfaces.INavigateService _navigateService;
+        public SplashViewModel(Services.Interfaces.INavigateService navigateService)
+        {
+            _navigateService = navigateService;
+        }
+
+        [RelayCommand]
+        private void NavigateToLogin()
+        {
+            _navigateService.NavigateTo(Shared.ScreenType.Login);
+        }
     }
 }
