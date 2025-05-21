@@ -1,0 +1,72 @@
+﻿<UserControl x:Class="Client.WPF.Views.EmojiPickerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Client.WPF.Views"
+             xmlns:ui="clr-namespace:Client.WPF.UI"
+             mc:Ignorable="d"
+             Height="400"
+             Width="525">
+
+    <Grid Width="525"
+          Height="400">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBox Grid.Row="0"
+                 Margin="5"
+                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                 Tag="Search emojis..." />
+        <ListBox Grid.Row="1"
+                 ItemsSource="{Binding FilteredEmojis}"
+                 SelectedItem="{Binding SelectedEmoji, Mode=TwoWay}"
+                 ScrollViewer.CanContentScroll="True"
+                 VirtualizingPanel.IsVirtualizing="True"
+                 VirtualizingPanel.VirtualizationMode="Recycling"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 VerticalAlignment="Stretch"
+                 SelectionMode="Single"
+                 Background="Transparent"
+                 BorderThickness="0">
+
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel IsItemsHost="True"
+                               Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <ui:EmojiControl EmojiCode="{Binding Code}"
+                                     MouseDoubleClick="EmojiControl_MouseDoubleClick"
+                                     Width="32"
+                                     Height="32"
+                                     Margin="0"
+                                     ToolTip="{Binding Description}" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}">
+                    <Setter Property="Padding"
+                            Value="0" />
+                    <Setter Property="Margin"
+                            Value="5" />
+                    <Setter Property="HorizontalContentAlignment"
+                            Value="Center" />
+                    <Setter Property="VerticalContentAlignment"
+                            Value="Center" />
+                    <Setter Property="Width"
+                            Value="42" />
+                    <Setter Property="Height"
+                            Value="42" />
+                </Style>
+            </ListBox.ItemContainerStyle>
+
+        </ListBox>
+    </Grid>
+</UserControl>

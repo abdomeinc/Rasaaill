@@ -44,5 +44,7 @@
 
         // 🆕 Add this line for emoji reactions:
         public List<string> Reactions { get; set; } = new();
+
+        public bool ShowProfileImage { get; set; }
     }
 }

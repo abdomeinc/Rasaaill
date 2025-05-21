@@ -10,13 +10,69 @@
         MinWidth="1024"
         WindowState="Maximized"
         xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         xmlns:pages="clr-namespace:Client.WPF.ViewModels"
+        xmlns:models="clr-namespace:Client.WPF.Models"
+        xmlns:ui="clr-namespace:Client.WPF.UI"
         Foreground="{DynamicResource TextFillColorPrimaryBrush}"
         WindowStartupLocation="CenterScreen"
         Icon="/Resources/Icons/rasaaill_64.png">
 
-    <Grid>
-        <ContentPresenter Content="{Binding CurrentViewModel}" />
+    <Grid FocusVisualStyle="{x:Null}"
+          Margin="0 10 0 0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Border Background="{DynamicResource SmokeFillColorDefaultBrush}"
+                FocusVisualStyle="{x:Null}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <ListView FocusVisualStyle="{x:Null}"
+                          ItemsSource="{Binding NavigationItems, Mode=OneWay}"
+                          SelectedIndex="{Binding SelectedNavigationIndex}"
+                          SelectionMode="Single"
+                          HorizontalAlignment="Left">
+                    <ListView.ItemTemplate>
+                        <DataTemplate DataType="{x:Type models:NavigationItem}">
+                            <Grid Margin="0,0,0,0"
+                                  Cursor="Hand"
+                                  VerticalAlignment="Stretch"
+                                  HorizontalAlignment="Stretch"
+                                  ToolTip="{Binding Name}">
+                                <ui:FontIcon Icon="{Binding Icon, Mode=OneWay}"
+                                             FontSize="30" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <ListView Grid.Row="2"
+                          FocusVisualStyle="{x:Null}"
+                          ItemsSource="{Binding FooterNavigationItems, Mode=OneWay}"
+                          SelectedIndex="{Binding SelectedFooterNavigationIndex}"
+                          SelectionMode="Single"
+                          HorizontalAlignment="Left">
+                    <ListView.ItemTemplate>
+                        <DataTemplate DataType="{x:Type models:NavigationItem}">
+                            <StackPanel Margin="0,0,0,0"
+                                        Cursor="Hand"
+                                        VerticalAlignment="Stretch"
+                                        HorizontalAlignment="Stretch"
+                                        ToolTip="{Binding Name}">
+                                <ui:FontIcon Icon="{Binding Icon, Mode=OneWay}"
+                                             FontSize="30" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+        </Border>
+        <ContentPresenter Grid.Column="1"
+                          Content="{Binding CurrentViewModel}"
+                          FocusVisualStyle="{x:Null}" />
     </Grid>
 </Window>

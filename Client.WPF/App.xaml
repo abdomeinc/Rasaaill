@@ -14,6 +14,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                
                 <!-- Converters first -->
                 <ResourceDictionary Source="/Resources/Converters.xaml" />
 
@@ -23,8 +24,18 @@
 
 
 
+                <ResourceDictionary Source="/Resources/Styles/FontIcon.xaml" />
+                
                 <!-- View templates -->
                 <ResourceDictionary>
+
+                    <DataTemplate DataType="{x:Type vm:ArchivedViewModel}">
+                        <v:ArchivedView />
+                    </DataTemplate>
+
+                    <DataTemplate DataType="{x:Type vm:CallsViewModel}">
+                        <v:CallsView />
+                    </DataTemplate>
 
                     <DataTemplate DataType="{x:Type vm:ConversationsViewModel}">
                         <v:ConversationsView />
@@ -33,24 +44,43 @@
                     <DataTemplate DataType="{x:Type vm:ConversationViewModel}">
                         <v:ConversationView />
                     </DataTemplate>
+
+                    <DataTemplate DataType="{x:Type vm:EmojiPickerViewModel}">
+                        <v:EmojiPickerView />
+                    </DataTemplate>
+                    
+                    <DataTemplate DataType="{x:Type vm:GroupsViewModel}">
+                        <v:GroupsView />
+                    </DataTemplate>
+                    
                     <DataTemplate DataType="{x:Type vm:LoginVerificationViewModel}">
                         <v:LoginVerificationView />
                     </DataTemplate>
+                    
                     <DataTemplate DataType="{x:Type vm:LoginViewModel}">
                         <v:LoginView />
                     </DataTemplate>
+                    
+                    <DataTemplate DataType="{x:Type vm:MomentsViewModel}">
+                        <v:MomentsView />
+                    </DataTemplate>
+                    
                     <DataTemplate DataType="{x:Type vm:ProfileViewModel}">
                         <v:ProfileView />
                     </DataTemplate>
+                    
                     <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
                         <v:SettingsView />
                     </DataTemplate>
+                    
                     <DataTemplate DataType="{x:Type vm:SplashViewModel}">
                         <v:SplashView />
                     </DataTemplate>
+                    
                     <DataTemplate DataType="{x:Type vm:VerificationCodeViewModel}">
                         <v:VerificationCodeView />
                     </DataTemplate>
+                    
                 </ResourceDictionary>
                 <!-- End of View templates -->
 

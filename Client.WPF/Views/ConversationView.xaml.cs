@@ -3,9 +3,6 @@ using System.Windows.Controls;
 
 namespace Client.WPF.Views
 {
-    /// <summary>
-    /// Interaction logic for ConversationView.xaml
-    /// </summary>
     public partial class ConversationView : UserControl
     {
         public ConversationView()
@@ -17,7 +14,6 @@ namespace Client.WPF.Views
 
         private void ConversationView_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
-            // Also try once at load
             SubscribeToMessagesCollection();
             ScrollToBottom();
         }
@@ -35,20 +31,24 @@ namespace Client.WPF.Views
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
-                // Scroll to bottom on UI thread
-                Dispatcher.InvokeAsync(() =>
-                {
-                    ScrollToBottom();
-                });
+                _ = Dispatcher.InvokeAsync(ScrollToBottom);
             }
         }
 
         private void ScrollToBottom()
         {
-            if (MessagesListBox.Items.Count == 0) return;
+            if (MessagesListBox.Items.Count == 0)
+            {
+                return;
+            }
 
-            var lastItem = MessagesListBox.Items[MessagesListBox.Items.Count - 1];
+            object lastItem = MessagesListBox.Items[^1];
             MessagesListBox.ScrollIntoView(lastItem);
         }
+
+        //private void Picker_Picked(object sender, Emoji.Wpf.EmojiPickedEventArgs e)
+        //{
+        //    EmojiRichTextBox.CaretPosition.InsertTextInRun(e.Emoji);
+        //}
     }
 }

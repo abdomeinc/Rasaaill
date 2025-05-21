@@ -56,7 +56,7 @@ namespace Client.WPF.ViewModels
 
         private Task LoadConversationsAsync()
         {
-            var generated = _conversationGeneratorService.GenerateConversations(9, 2);
+            var generated = _conversationGeneratorService.GenerateConversations(2, 1);
 
             Conversations = [.. generated.OrderByDescending(e => e.LastMessage?.Timestamp)];
 

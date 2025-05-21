@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.ObjectModel;
 
 namespace Client.WPF.ViewModels
 {
@@ -16,65 +17,65 @@ namespace Client.WPF.ViewModels
         [ObservableProperty]
         private string _applicationTitle = "Rasaaill | Instant Messages";
 
-        //[ObservableProperty]
-        //private ObservableCollection<object> _menuItems = new()
-        //{
-        //    new NavigationViewItem()
-        //    {
-        //        Content = "Conversations",
-        //        Icon = new SymbolIcon { Symbol = SymbolRegular.Chat28 },
-        //        TargetPageType = typeof(ConversationsViewModel)
-        //    },
-        //    new NavigationViewItem()
-        //    {
-        //        Content = "Calls",
-        //        Icon = new SymbolIcon { Symbol = SymbolRegular.Call20 },
-        //        TargetPageType = typeof(ProfileViewModel)
-        //    },
-        //    new NavigationViewItem()
-        //    {
-        //        Content = "Status",
-        //        Icon = new SymbolIcon { Symbol = SymbolRegular.ResizeImage20 },
-        //        TargetPageType = typeof(ProfileViewModel)
-        //    },
-        //    new NavigationViewItem()
-        //    {
-        //        Content = "Groups",
-        //        Icon = new SymbolIcon { Symbol = SymbolRegular.PeopleCommunity20 },
-        //        TargetPageType = typeof(ProfileViewModel)
-        //    },
-        //    new NavigationViewItem()
-        //    {
-        //        Content = "Archived",
-        //        Icon = new SymbolIcon { Symbol = SymbolRegular.Archive32 },
-        //        TargetPageType = typeof(ProfileViewModel)
-        //    }
-        //};
+        [ObservableProperty]
+        private int _selectedNavigationIndex;
 
-        //[ObservableProperty]
-        //private ObservableCollection<object> _footerMenuItems = new()
-        //{
-        //    new NavigationViewItem()
-        //    {
-        //        Content = "Settings",
-        //        Icon = new SymbolIcon { Symbol = SymbolRegular.Settings24 },
-        //        TargetPageType = typeof(SettingsViewModel)
-        //    },
-        //    new NavigationViewItem()
-        //    {
-        //        Content = "Profile",
-        //        Icon = new SymbolIcon { Symbol = SymbolRegular.Person32 },
-        //        TargetPageType = typeof(SettingsViewModel)
-        //    }
-        //};
+        [ObservableProperty]
+        private int _selectedFooterNavigationIndex;
 
-        //[ObservableProperty]
-        //private ObservableCollection<MenuItem> _trayMenuItems = new()
-        //{
-        //    new MenuItem { Header = "Home", Tag = "tray_home" }
-        //};
+        [ObservableProperty]
+        private ObservableCollection<Models.NavigationItem> _navigationItems = new()
+        {
+            new Models.NavigationItem()
+            {
+                Name = "Conversations",
+                Icon = Helpers.IconsLoader.Icon.ChatBubbles,
+                DataType = typeof(ConversationsViewModel)
+            },
+            new Models.NavigationItem()
+            {
+                Name = "Calls",
+                Icon = Helpers.IconsLoader.Icon.Phone,
+                DataType = typeof(CallsViewModel)
+            },
+            new Models.NavigationItem()
+            {
+                Name = "Moments",
+                //Icon = "\xE72D",
+                Icon = Helpers.IconsLoader.Icon.StatusCircle,
+                DataType = typeof(MomentsViewModel)
+            },
+            new Models.NavigationItem()
+            {
+                Name = "Groups",
+                //Icon = "\xE716",
+                Icon = Helpers.IconsLoader.Icon.Group,
+                DataType = typeof(GroupsViewModel)
+            },
+            new Models.NavigationItem()
+            {
+                Name = "Archived",
+                Icon = Helpers.IconsLoader.Icon.Package,
+                DataType = typeof(ArchivedViewModel)
+            }
+        };
 
-        // Enum to define views
+        [ObservableProperty]
+        private ObservableCollection<Models.NavigationItem> _footerNavigationItems = new()
+        {
+            new Models.NavigationItem()
+            {
+                Name = "Settings",
+                Icon = Helpers.IconsLoader.Icon.Settings,
+                DataType = typeof(SettingsViewModel)
+            },
+            new Models.NavigationItem()
+            {
+                Name = "Profile",
+                Icon = Helpers.IconsLoader.Icon.GuestUser,
+                DataType = typeof(ProfileViewModel)
+            }
+        };
 
         [ObservableProperty]
         private Shared.ScreenType currentView = Shared.ScreenType.Splash;
@@ -106,6 +107,29 @@ namespace Client.WPF.ViewModels
             };
             // Initialize the view model
             _ = SwitchToSplashIfNeededAsync();
+        }
+
+        partial void OnSelectedNavigationIndexChanged(int value)
+        {
+            if (value == -1) return;
+            SelectedFooterNavigationIndex = -1;
+
+            if (value == 0)
+                SwitchToScreen(Shared.ScreenType.Conversations);
+            else if (value == 1)
+                SwitchToScreen(Shared.ScreenType.Settings);
+        }
+
+        partial void OnSelectedFooterNavigationIndexChanged(int value)
+        {
+            if (value == -1) return;
+            SelectedNavigationIndex = -1;
+
+            if (value == 0)
+                SwitchToScreen(Shared.ScreenType.Settings);
+            else if (value == 1)
+                SwitchToScreen(Shared.ScreenType.Profile);
+
         }
 
         private async Task SwitchToSplashIfNeededAsync()

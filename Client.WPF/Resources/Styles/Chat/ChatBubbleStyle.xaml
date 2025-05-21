@@ -2,6 +2,8 @@
                     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <FontFamily x:Key="EmojisFontFamily">/Resources/Fonts/Emojis/#Segoe UI Emoji</FontFamily>
+
     <!-- Chat bubble style -->
     <Style x:Key="MessageInfoStyle"
            TargetType="StackPanel">
@@ -22,14 +24,18 @@
     <!-- Chat bubble style -->
     <Style x:Key="MessageBubbleStyle"
            TargetType="Border">
-        <!--<Setter Property="CornerRadius"
-                Value="10" />-->
+        <Setter Property="CornerRadius"
+                Value="10" />
         <Setter Property="Padding"
                 Value="10 10 10 0" />
         <Setter Property="Margin"
                 Value="5" />
         <Setter Property="MaxWidth"
                 Value="1024" />
+        <Setter Property="BorderThickness"
+                Value="1 1 1 1" />
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource SolidBackgroundFillColorBaseAltBrush}" />
         <Setter Property="FocusVisualStyle"
                 Value="{x:Null}" />
     </Style>
@@ -38,12 +44,14 @@
     <Style x:Key="SenderBubbleStyle"
            TargetType="Border"
            BasedOn="{StaticResource MessageBubbleStyle}">
-        <Setter Property="Background"
-                Value="#0088fe" />
+        <Setter Property="Background">
+            <Setter.Value>
+                <SolidColorBrush Color="#14224f"
+                                 Opacity=".5" />
+            </Setter.Value>
+        </Setter>
         <Setter Property="HorizontalAlignment"
                 Value="Right" />
-        <Setter Property="Padding"
-                Value="10 10 10 0" />
     </Style>
 
     <!-- Recipient (gray) bubble style -->
@@ -51,14 +59,14 @@
            TargetType="Border"
            BasedOn="{StaticResource MessageBubbleStyle}">
         <Setter Property="Background"
-                Value="#e9e8ee" />
+                Value="#fff" />
         <Setter Property="HorizontalAlignment"
                 Value="Left" />
     </Style>
 
     <!-- Message text style -->
     <Style x:Key="MessageTextStyle"
-           TargetType="TextBlock">
+           TargetType="{x:Type TextBlock}">
         <Setter Property="TextWrapping"
                 Value="Wrap" />
         <Setter Property="FontSize"
@@ -87,10 +95,104 @@
 
     <!-- Sender text style -->
     <Style x:Key="SenderTextStyle"
-           TargetType="TextBlock"
+           TargetType="{x:Type TextBlock}"
            BasedOn="{StaticResource MessageTextStyle}">
         <Setter Property="Foreground"
                 Value="#e9e8ee" />
     </Style>
-    
+
+
+
+    <!-- Message Reaction Style -->
+    <Style x:Key="MessageReactionStyle"
+           TargetType="ListBox">
+        <Setter Property="Grid.Row"
+                Value="1" />
+        <Setter Property="Grid.Column"
+                Value="0" />
+        <Setter Property="Grid.ColumnSpan"
+                Value="2" />
+        <Setter Property="HorizontalAlignment"
+                Value="Center" />
+        <Setter Property="VerticalAlignment"
+                Value="Center" />
+        <Setter Property="Margin"
+                Value="0 -15 0 0" />
+        <Setter Property="Foreground"
+                Value="{x:Null}" />
+        <Setter Property="FocusVisualStyle"
+                Value="{x:Null}" />
+        <Setter Property="Background"
+                Value="Transparent" />
+        <Setter Property="BorderBrush"
+                Value="Transparent" />
+        <Setter Property="FontSize"
+                Value="15" />
+        <Setter Property="FontFamily"
+                Value="{StaticResource EmojisFontFamily}" />
+        <Setter Property="FontWeight"
+                Value="Bold" />
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Padding"
+                            Value="0" />
+                    <Setter Property="Margin"
+                            Value="0" />
+                    <Setter Property="Background"
+                            Value="Transparent" />
+                    <Setter Property="BorderBrush"
+                            Value="Transparent" />
+                    <Setter Property="FocusVisualStyle"
+                            Value="{x:Null}" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListBoxItem">
+                                <ContentPresenter FocusVisualStyle="{x:Null}" />
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <Border Background="{DynamicResource LayerOnAcrylicFillColorDefaultBrush}"
+                            Cursor="Hand"
+                            Margin="0 0 5 0"
+                            CornerRadius="50"
+                            Opacity="1">
+                        <TextBlock FontSize="24"
+                                                Text="{Binding}" />
+                    </Border>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel Background="Transparent"
+                                            Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Sender Message Reaction Style -->
+    <Style x:Key="SenderMessageReactionStyle"
+           TargetType="ListBox"
+           BasedOn="{StaticResource MessageReactionStyle}">
+        <Setter Property="HorizontalAlignment"
+                Value="Right" />
+    </Style>
+
+    <!-- Recipient Message Reaction Style -->
+    <Style x:Key="RecipientMessageReactionStyle"
+           TargetType="ListBox"
+           BasedOn="{StaticResource MessageReactionStyle}">
+        <Setter Property="HorizontalAlignment"
+                Value="Left" />
+    </Style>
+
 </ResourceDictionary>

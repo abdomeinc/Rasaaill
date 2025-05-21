@@ -43,7 +43,8 @@ namespace Client.WPF.Services
                 ImageUrl = other.AvatarUrl,
                 CreationDate = DateTime.UtcNow.AddDays(-index - 1),
                 Messages = [],
-                UnreadCount = new Random().Next(1, 10)
+                UnreadCount = new Random().Next(1, 10),
+                IsGroup = false
             };
 
             AddMessages(conversation, new[] { you, other }, 35);
@@ -74,7 +75,8 @@ namespace Client.WPF.Services
                     IsSender = isSender,
                     Type = type,
                     Content = content,
-                    Reactions = GenerateReactions(i)
+                    Reactions = GenerateReactions(),
+                    ShowProfileImage = !isSender && conversation.IsGroup
                 };
 
                 conversation.Messages.Add(message);
@@ -94,18 +96,46 @@ namespace Client.WPF.Services
             {
                 MessageType.Image => $"https://picsum.photos/seed/img{index}/300/200",
                 MessageType.Video => $"https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_{index % 10}.mp4",
-                _ => $"Message {index + 1}: {GenerateRandomText(index * 4)}"
+                _ => GenerateRandomText(index * 4)
             };
         }
 
-        private List<string> GenerateReactions(int index)
+        //private List<string> GenerateReactions(int index)
+        //{
+        //    if (index % 10 == 0)
+        //    {
+        //        return ["👍"];
+        //    }
+
+        //    return index % 15 == 0 ? ["❤️", "😂"] : [];
+        //}
+
+        private List<string> GenerateReactions()
         {
-            if (index % 10 == 0)
+            string[] availableEmojis = [];// Helpers.EmojiHelper.GetAllEmojis();
+
+            // Handle cases where there are no emojis to select from
+            if (availableEmojis == null || availableEmojis.Length == 0)
             {
-                return ["👍"];
+                return new List<string>();
             }
 
-            return index % 15 == 0 ? ["❤️", "😂"] : [];
+            // Determine the number of emojis to select (between 1 and 3, but not more than available)
+            // Rng.Next(min, max) returns a number between min (inclusive) and max (exclusive)
+            int countToSelect = 0;// _random.Next(1, Math.Min(4, availableEmojis.Length + 1));
+
+            // Use a HashSet to select unique emojis efficiently
+            HashSet<string> selectedEmojis = new HashSet<string>();
+
+            // Keep adding random emojis until we have the desired number of unique ones
+            while (selectedEmojis.Count < countToSelect)
+            {
+                int randomIndex = _random.Next(0, availableEmojis.Length);
+                selectedEmojis.Add(availableEmojis[randomIndex]);
+            }
+
+            // Convert the HashSet to a List<string> and return
+            return selectedEmojis.ToList();
         }
 
         private ConversationDto GenerateGroupConversation(int index)
@@ -123,7 +153,8 @@ namespace Client.WPF.Services
                 ImageUrl = lead.AvatarUrl,
                 CreationDate = DateTime.UtcNow.AddDays(-index - 2),
                 Messages = [],
-                UnreadCount = new Random().Next(1, 10)
+                UnreadCount = new Random().Next(1, 10),
+                IsGroup = true
             };
 
             AddMessages(conversation, [you, lead, member], 40);

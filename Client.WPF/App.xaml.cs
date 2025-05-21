@@ -26,7 +26,7 @@ namespace Client.WPF
 
         }
 
-        private static void ConfigureServices(IServiceCollection services)
+        private static async void ConfigureServices(IServiceCollection services)
         {
             // Register HttpClient with base address
             _ = services.AddHttpClient<Core.Comms.Services.Interfaces.IAuthService, Core.Comms.Services.AuthService>(client =>
@@ -44,18 +44,27 @@ namespace Client.WPF
             // ViewModels
             _ = services.AddTransient<ViewModels.MainViewModel>();
 
-            _ = services.AddTransient<ViewModels.SplashViewModel>();
-            _ = services.AddTransient<ViewModels.LoginViewModel>();
-            _ = services.AddTransient<ViewModels.LoginVerificationViewModel>();
-            _ = services.AddTransient<ViewModels.VerificationCodeViewModel>();
-
+            _ = services.AddTransient<ViewModels.ArchivedViewModel>();
+            _ = services.AddTransient<ViewModels.CallsViewModel>();
             _ = services.AddTransient<ViewModels.ConversationsViewModel>();
             _ = services.AddTransient<ViewModels.ConversationViewModel>();
-
-            _ = services.AddTransient<ViewModels.SettingsViewModel>();
+            _ = services.AddTransient<ViewModels.EmojiPickerViewModel>();
+            _ = services.AddTransient<ViewModels.GroupsViewModel>();
+            _ = services.AddTransient<ViewModels.LoginVerificationViewModel>();
+            _ = services.AddTransient<ViewModels.LoginViewModel>();
+            _ = services.AddTransient<ViewModels.MainViewModel>();
+            _ = services.AddTransient<ViewModels.MomentsViewModel>();
             _ = services.AddTransient<ViewModels.ProfileViewModel>();
+            _ = services.AddTransient<ViewModels.SettingsViewModel>();
+            _ = services.AddTransient<ViewModels.SplashViewModel>();
+            _ = services.AddTransient<ViewModels.VerificationCodeViewModel>();
+
 
             _ = services.AddTransient<MainWindow>();
+
+            await Helpers.IconsLoader.ReadIconData();
+
+            await Helpers.EmojiManager.LoadAllEmojiMetadataAsync();
         }
 
 
