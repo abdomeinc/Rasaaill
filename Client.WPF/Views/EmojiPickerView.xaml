@@ -9,7 +9,7 @@
              Height="400"
              Width="525">
 
-    <Grid Width="525"
+    <!--<Grid Width="525"
           Height="400">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -68,5 +68,5 @@
             </ListBox.ItemContainerStyle>
 
         </ListBox>
-    </Grid>
+    </Grid>-->
 </UserControl>

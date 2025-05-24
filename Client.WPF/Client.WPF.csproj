@@ -40,6 +40,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+		<PackageReference Include="Emoji.Wpf" Version="0.3.4" />
 		<!--<PackageReference Include="Emoji.Wpf" Version="0.3.4" />
 		<PackageReference Include="GEmojiSharp" Version="4.0.0" />-->
 		<PackageReference Include="MaterialDesignThemes" Version="5.2.1" />

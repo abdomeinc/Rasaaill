@@ -46,9 +46,9 @@ namespace Client.WPF.Views
             MessagesListBox.ScrollIntoView(lastItem);
         }
 
-        //private void Picker_Picked(object sender, Emoji.Wpf.EmojiPickedEventArgs e)
-        //{
-        //    EmojiRichTextBox.CaretPosition.InsertTextInRun(e.Emoji);
-        //}
+        private void Picker_Picked(object sender, Emoji.Wpf.EmojiPickedEventArgs e)
+        {
+            EmojiRichTextBox.CaretPosition.InsertTextInRun(e.Emoji);
+        }
     }
 }

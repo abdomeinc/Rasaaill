@@ -111,10 +111,10 @@ namespace Client.WPF.Behaviors
                 {
                     _ = textBox.MoveFocus(request);
                     // Optional: Select all text in the next box for easy replacement
-                    // if (FocusManager.GetFocusedElement(FocusManager.GetFocusScope(textBox)) is TextBox nextTextBox)
-                    // {
-                    //      nextTextBox.SelectAll();
-                    // }
+                    if (FocusManager.GetFocusedElement(FocusManager.GetFocusScope(textBox)) is TextBox nextTextBox)
+                    {
+                        nextTextBox.SelectAll();
+                    }
 
                     // If this was the last textbox and it's filled, you might want to trigger a command in the ViewModel.
                     // This would require a more complex behavior that takes a Command as an attached property,
@@ -130,11 +130,11 @@ namespace Client.WPF.Behaviors
                 // The KeyDown handler for Backspace covers the most common case.
                 // This else-if might be needed if text is cleared by other means (e.g., programmatically or Ctrl+X)
                 // If you want focus to go back when the box becomes empty *by any means*, uncomment and adjust.
-                // var request = new TraversalRequest(FocusNavigationDirection.Previous);
-                // textBox.Dispatcher.BeginInvoke(new Action(() =>
-                // {
-                //     textBox.MoveFocus(request);
-                // }), DispatcherPriority.Render);
+                var request = new TraversalRequest(FocusNavigationDirection.Previous);
+                textBox.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    textBox.MoveFocus(request);
+                }), DispatcherPriority.Render);
             }
         }
 

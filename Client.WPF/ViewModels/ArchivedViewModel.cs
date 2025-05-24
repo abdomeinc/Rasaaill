@@ -1,6 +1,6 @@
 ﻿namespace Client.WPF.ViewModels
 {
-    public class ArchivedViewModel : ViewModelBase
+    public partial class ArchivedViewModel : ViewModelBase
     {
     }
 }
